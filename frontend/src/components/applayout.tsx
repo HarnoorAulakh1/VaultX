@@ -18,26 +18,31 @@ export default function AppLayout() {
       if (!public_id) {
         navigate("/setup");
       }
-      const checkAddress = await api.post("/user/checkAddress", {
-        public_id: public_id,
-      });
-      if (checkAddress.status == 200) {
-        try {
-          const response = await api.post("/user/checkLogin");
-          console.log(response.status);
-          if (response.status != 200) {
+      try {
+        const checkAddress = await api.post("/user/checkAddress", {
+          public_id: public_id,
+        });
+        if (checkAddress.status == 200) {
+          try {
+            const response = await api.post("/user/checkLogin");
+            if (response.status != 200) {
+              navigate("/");
+            }
+          } catch (error) {
             navigate("/");
+            console.log(error);
           }
-        } catch (error) {
-          navigate("/");
-          console.log(error);
+        } else {
+          window.localStorage.removeItem("public_id");
+          navigate("/setup");
         }
-      } else {
+        setLoading(true);
+      } catch (error) {
+        console.log(error);
         window.localStorage.removeItem("public_id");
         navigate("/setup");
       }
-      setLoading(true);
-      console.log(loading);
+
     }
     handle();
   }, []);

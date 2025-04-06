@@ -29,16 +29,16 @@ export default function PrivateKey() {
       className="bg-black text-white w-[361px] h-[600px] mt-2 p-4 rounded-lg"
     >
       <ToastContainer />
-      <div className="flex items-center px-2 gap-2 w-full ">
+      <div className="relative px-2 gap-2 w-full ">
         <ArrowLeft
-          className="text-[#949494]"
+          className="text-[#949494] absolute hover:cursor-pointer"
           size={24}
           onClick={() => navigate(-1)}
         />
-      </div>
-      <h2 className="text-xl font-semibold text-center flex items-center justify-center">
+      <h2 className="text-xl font-semibold text-center w-full flex items-center justify-center">
         <span className="mr-2">🔑</span> Import private key
       </h2>
+      </div>
       <p className="text-gray-400 text-center">
         It will be encrypted and stored on your device.
       </p>

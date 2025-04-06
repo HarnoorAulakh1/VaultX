@@ -1,12 +1,26 @@
 import { Repeat2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Footer() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [state, setState] = useState("");
+  useEffect(() => {
+    const url = window.location.href;
+    const path = url.split("/").pop();
+    console.log(path == "swap");
+    console.log(path == "app");
+    if (path != undefined) setState(path);
+  }, []);
   return (
-    <div className="flex justify-around border-t border-[#2a2a2a] bg-[#14151c] py-2 ">
-      <button className="flex flex-col items-center text-blue-400" onClick={()=>navigate("/app")}>
-        <div className="text-blue-400">
+    <div className="flex justify-around border-t text-gray-400 border-[#2a2a2a] bg-[#14151c] py-2 ">
+      <button
+        className={`${
+          state == "app" && "text-blue-400"
+        } flex flex-col items-center hover:cursor-pointer `}
+        onClick={() => navigate("/app")}
+      >
+        <div className="">
           <svg
             width="20"
             height="20"
@@ -24,15 +38,25 @@ export default function Footer() {
         <span className="text-xs mt-1">Portfolio</span>
       </button>
 
-      <button className="flex flex-col items-center text-gray-400" onClick={()=>navigate("/app/swap")}>
-        <div className="text-gray-400">
+      <button
+        className={`${
+          state == "swap" && "text-blue-400"
+        } flex flex-col items-center hover:cursor-pointer `}
+        onClick={() => navigate("/app/swap")}
+      >
+        <div className="">
           <Repeat2 size={20} />
         </div>
         <span className="text-xs mt-1">Swap</span>
       </button>
 
-      <button className="flex flex-col items-center text-gray-400" onClick={()=>navigate("/app/swap")}>
-        <div className="text-gray-400">
+      <button
+        className={`${
+          state == "explore" && "text-blue-400"
+        } flex flex-col items-center hover:cursor-pointer `}
+        onClick={() => navigate("/app/swap")}
+      >
+        <div className="">
           <svg
             width="20"
             height="20"

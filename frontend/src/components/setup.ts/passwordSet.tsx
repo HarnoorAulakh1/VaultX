@@ -10,7 +10,12 @@ export default function PasswordSet() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
-  const { user } = useContext(userContext);
+  const { user, dispatch } = useContext(userContext);
+  const [data, setData] = useState({
+    private_key: user.private_key,
+    seed_phrase: user.seed_phrase,
+  });
+  const [show, setter] = useState(false);
   async function handle(e: React.SyntheticEvent) {
     e.preventDefault();
     if (user.private_key || user.seed_phrase) {
@@ -27,12 +32,17 @@ export default function PasswordSet() {
             password: password,
             seed_phrase: user.seed_phrase,
           });
+        dispatch((x) => {
+          return { ...x, private_key: "", seed_phrase: "" };
+        });
         if (response.status === 200) {
           toast(response.data.message);
           window.localStorage.setItem("public_id", response.data.public_id);
-          setTimeout(() => {
-            navigate("/");
-          }, 2000);
+          setter(true);
+          setData({
+            private_key: response.data.private_key,
+            seed_phrase: response.data.seed_phrase,
+          });
         }
       } catch (error) {
         toast.error(
@@ -49,25 +59,36 @@ export default function PasswordSet() {
       if (response.status === 200) {
         toast(response.data.message);
         window.localStorage.setItem("public_id", response.data.public_id);
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
+        setter(true);
+        setData({
+          private_key: response.data.private_key,
+          seed_phrase: response.data.seed_phrase,
+        });
       }
     }
+  }
+  async function next(e: React.SyntheticEvent) {
+    e.preventDefault();
+    setter(false);
+    setData({
+      private_key: "",
+      seed_phrase: "",
+    });
+    navigate("/");
   }
   return (
     <form
       onSubmit={(e) => handle(e)}
-      className="flex flex-col items-center h-full  text-white px-[1rem]"
+      className="flex flex-col items-center h-full overflow-hidden  text-white px-[1rem]"
     >
       <ToastContainer />
-      <div className="flex items-center py-8 px-2 gap-2 w-full ">
-        <ArrowLeft
-          className="text-[#949494]"
+      <div className="relative py-8 px-2 gap-2 w-full ">
+      <ArrowLeft
+          className="text-[#949494] absolute hover:cursor-pointer"
           size={24}
           onClick={() => navigate(-1)}
         />
-        <h1 className="text-xl font-bold">Set up a password</h1>
+        <h1 className="text-xl text-center w-full font-bold">Set up a password</h1>
       </div>
       <p className="text-gray-400 text-sm mt-2 ml-2">
         It should be at least 8 characters. You'll need this to unlock VaultX.
@@ -102,6 +123,26 @@ export default function PasswordSet() {
       >
         Next
       </button>
+      {show && (
+        <div className="flex flex-col break-words whitespace-normal overflow-hidden py-8 px-2 gap-2 w-full ">
+          <h1>Note down these credentionals and store in a secure loaction.</h1>
+          <span className="text-sm text-gray-400 ">
+            <span className="underline">Seed phrase:</span> <br />
+            {data.seed_phrase}
+          </span>
+          <span className="text-sm text-gray-400">
+          <span className="underline">Private key:</span>  <br />
+            {data.private_key}
+          </span>
+          <button
+            type="button"
+            onClick={(e) => next(e)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+          >
+            Continue
+          </button>
+        </div>
+      )}
     </form>
   );
 }

@@ -4,12 +4,12 @@ export default function ImportWallet(){
     const navigate = useNavigate();
     return (
         <div className="flex flex-col w-full mt-10 px-[1rem]bg-[#0e0e0f]  bg-[#0e0e0f] px-[1rem] h-full overflow-hidden items-center text-white">
-          <div className="flex items-center px-2 gap-2 w-full ">
-            <ArrowLeft
-              className="text-[#949494]"
-              size={24}
-              onClick={() => navigate(-1)}
-            />
+          <div className="relative px-2 gap-2 w-full ">
+          <ArrowLeft
+          className="text-[#949494] absolute hover:cursor-pointer"
+          size={24}
+          onClick={() => navigate(-1)}
+        />
           </div>
           <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
             ⧫

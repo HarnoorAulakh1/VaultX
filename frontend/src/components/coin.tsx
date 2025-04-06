@@ -1,9 +1,10 @@
 import { FiArrowLeft } from "react-icons/fi";
-import { ArrowDown, ArrowUp, Repeat2 } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
 export default function Coin({ name }: { name: string }) {
   const navigate = useNavigate();
@@ -16,16 +17,16 @@ export default function Coin({ name }: { name: string }) {
       setPrice(price.data.ethereum.usd);
     }
     const interval = setInterval(() => handle(), 10000);
-    return() => {
+    return () => {
       clearInterval(interval);
     };
   }, []);
 
   return (
     <div className="h-full">
-      <div className="flex items-center py-8 px-2">
+      <div className="relative py-8 px-4">
         <FiArrowLeft
-          className="text-[#949494]"
+          className="text-[#949494] absolute hover:cursor-pointer"
           size={24}
           onClick={() => navigate(-1)}
         />
@@ -46,25 +47,24 @@ export default function Coin({ name }: { name: string }) {
         </div>
 
         <div className="flex justify-center gap-8 ">
-          <button className="flex flex-col items-center">
+          <button
+            className="flex flex-col items-center"
+            onClick={() => navigate("/app/recieve")}
+          >
             <div className="bg-[#2a2a2a] p-4 rounded-full mb-2 hover:bg-[#1e1e1e]">
               <ArrowDown size={20} className="text-blue-400" />
             </div>
             <span className="text-gray-400 ">Receive</span>
           </button>
 
-          <button className="flex flex-col items-center">
+          <button
+            className="flex flex-col items-center"
+            onClick={() => navigate("/app/send")}
+          >
             <div className="bg-[#2a2a2a] p-4 rounded-full mb-2 hover:bg-[#1e1e1e]">
               <ArrowUp size={20} className="text-blue-400" />
             </div>
             <span className="text-gray-400 ">Send</span>
-          </button>
-
-          <button className="flex flex-col items-center">
-            <div className="bg-[#2a2a2a] p-4 rounded-full mb-2 hover:bg-[#1e1e1e]">
-              <Repeat2 size={20} className="text-blue-400" />
-            </div>
-            <span className="text-gray-400 ">Swap</span>
           </button>
         </div>
         <div className="flex flex-col items-start w-full px-4 gap-2">
@@ -80,7 +80,17 @@ export default function Coin({ name }: { name: string }) {
             <hr className="text-gray-700" />
             <div className="flex items-center justify-between px-4 py-2 border-b border-[#2a2a2a]">
               <p>Price</p>
-              <p className="text-white">{price!=-1?`$${price}`:".....Loading"}</p>
+              <div className="text-white">
+                {price != -1 ? (
+                  `$${price}`
+                ) : (
+                  <SkeletonTheme baseColor="#202020" highlightColor="#444">
+                    <p className="w-[5rem]">
+                      <Skeleton />
+                    </p>
+                  </SkeletonTheme>
+                )}
+              </div>
             </div>
           </div>
         </div>

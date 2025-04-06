@@ -46,10 +46,11 @@ export const register = async (req: Request, res: Response) => {
   try {
     const { password } = req.body;
     const wallet = ethers.Wallet.createRandom();
+    const seed_phrase = wallet.mnemonic?.phrase;
     const hashedPassword = await bcrypt.hash(password, 10);
     const hashedKey = await bcrypt.hash(wallet.privateKey, 10);
     console.log(wallet.privateKey);
-    console.log(wallet.address);
+    console.log(seed_phrase);
     const newUser = new user({
       password: hashedPassword,
       public_id: wallet.address,
@@ -60,6 +61,8 @@ export const register = async (req: Request, res: Response) => {
     res.status(200).json({
       message: "New wallet created successfully",
       public_id: wallet.address,
+      private_key: wallet.privateKey,
+      seed_phrase: seed_phrase,
     });
   } catch (error) {
     console.error("Error in register:", error);
@@ -88,6 +91,7 @@ export const checkLogin = async (req: Request, res: Response) => {
 
 export const checkAddress = async (req: Request, res: Response) => {
   const { public_id } = req.body;
+  console.log(public_id);
   if (!public_id) {
     res.status(400).json({ message: "Field is missing" });
     return;
@@ -105,7 +109,7 @@ export const checkAddress = async (req: Request, res: Response) => {
 
 export const setupExistingWallet = async (req: Request, res: Response) => {
   const { password, private_key, seed_phrase } = req.body;
-  console.log(password, private_key, seed_phrase);
+  //console.log(password, private_key, seed_phrase);
   if (!password || !(private_key || seed_phrase)) {
     res.status(400).json({ message: "Field is missing" });
     return;
@@ -122,8 +126,8 @@ export const setupExistingWallet = async (req: Request, res: Response) => {
   }
 
   try {
-    console.log(seed_phrase);
-    console.log(wallet.address);
+    // console.log(seed_phrase);
+    // console.log(wallet.address);
     const address = wallet.address;
     const newUser = new user({
       password: hashedPassword,
@@ -141,3 +145,4 @@ export const setupExistingWallet = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
