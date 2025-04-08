@@ -1,13 +1,67 @@
 import { ArrowDown, ArrowUp, RefreshCw } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../lib/utils";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { SkeletonTheme } from "react-loading-skeleton";
 export default function Token() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [balance, setBalance] = useState<number>(0);
+  const times = useRef(0);
+  async function handle() {
+    console.log(times.current);
+    if (times.current == 0) {
+      setLoading(false);
+      times.current++;
+    }
+    try {
+      const response = await api.post("/user/checkAddress", {
+        public_id: window.localStorage.getItem("public_id"),
+      });
+      if (response.status === 200) {
+        console.log(response.data);
+        setBalance(Number(parseFloat(response.data.balance).toFixed(5)));
+      } else {
+        console.log("error");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    setLoading(true);
+  }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      handle();
+    }, 3000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
     <>
       <div className="flex flex-col  items-center mt-10 mb-5">
         <div className="flex items-center">
-          <h1 className="text-3xl font-bold">$0.00</h1>
+          <div className="flex  gap-2">
+            {!loading || loading == null ? (
+              <SkeletonTheme baseColor="#202020" highlightColor="#444">
+                <p className="w-[4rem]">
+                  <Skeleton className="h-[2rem]" />
+                </p>
+              </SkeletonTheme>
+            ) : (
+              <h1 className="text-3xl font-bold">{balance}</h1>
+            )}
+            <span className="text-3xl font-bold"> ETH</span>
+          </div>
+
           <RefreshCw
+            onClick={() => {
+              times.current = 0;
+              handle();
+            }}
             size={15}
             className="ml-2 hover:cursor-pointer text-gray-400"
           />

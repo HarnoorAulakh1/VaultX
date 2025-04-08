@@ -53,7 +53,7 @@ export default function Lock() {
         public_id: public_id,
         password: password,
       });
-      console.log(response.status);
+      console.log(response.data);
       if (response.status === 200) {
         dispatch({
           public_id: response.data.public_id,

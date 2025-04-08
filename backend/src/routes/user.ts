@@ -6,7 +6,9 @@ import {
   lock,
   checkAddress,
   setupExistingWallet,
+  transaction,
 } from "../controllers/user.js";
+import { check } from "../middlewares/auth.js";
 
 const router = Router();
 
@@ -18,5 +20,7 @@ router
 router.route("/lock").get(lock as RequestHandler);
 router.route("/checkLogin").post(checkLogin as RequestHandler);
 router.route("/checkAddress").post(checkAddress as RequestHandler);
+router.route("/transaction").post(transaction as RequestHandler);
+
 
 export default router;

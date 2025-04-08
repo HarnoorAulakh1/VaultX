@@ -21,7 +21,6 @@ export default function PasswordSet() {
     if (user.private_key || user.seed_phrase) {
       let response;
       try {
-        console.log(user);
         if (user.private_key)
           response = await api.post("/user/setupExistingWallet", {
             password: password,
@@ -83,12 +82,14 @@ export default function PasswordSet() {
     >
       <ToastContainer />
       <div className="relative py-8 px-2 gap-2 w-full ">
-      <ArrowLeft
+        <ArrowLeft
           className="text-[#949494] absolute hover:cursor-pointer"
           size={24}
           onClick={() => navigate(-1)}
         />
-        <h1 className="text-xl text-center w-full font-bold">Set up a password</h1>
+        <h1 className="text-xl text-center w-full font-bold">
+          Set up a password
+        </h1>
       </div>
       <p className="text-gray-400 text-sm mt-2 ml-2">
         It should be at least 8 characters. You'll need this to unlock VaultX.
@@ -131,7 +132,7 @@ export default function PasswordSet() {
             {data.seed_phrase}
           </span>
           <span className="text-sm text-gray-400">
-          <span className="underline">Private key:</span>  <br />
+            <span className="underline">Private key:</span> <br />
             {data.private_key}
           </span>
           <button
