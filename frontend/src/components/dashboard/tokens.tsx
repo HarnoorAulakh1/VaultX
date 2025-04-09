@@ -34,7 +34,7 @@ export default function Token() {
   useEffect(() => {
     const interval = setInterval(() => {
       handle();
-    }, 3000);
+    }, 20000);
     return () => {
       clearInterval(interval);
     };

@@ -7,12 +7,44 @@ import { api } from "../../lib/utils";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { SkeletonTheme } from "react-loading-skeleton";
+import Popup from "../../lib/popup";
+import { useRef } from "react";
 export default function SendEth() {
   const { id } = useParams();
   const [amt, setter] = useState<number>(0);
   const [balance, setBalance] = useState<number>(0);
   const [loading, setLoading] = useState(false);
+  const [loading1, setLoading1] = useState(false);
   const navigate = useNavigate();
+  const ref = useRef<HTMLButtonElement>(null);
+    const formRef = useRef<HTMLFormElement>(null);
+  async function handleClickOutside(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading1(true);
+    try {
+      const response = await api.post("/user/transaction", {
+        to: id,
+        amount: String(amt),
+        public_id: window.localStorage.getItem("public_id"),
+      });
+      if (response.status === 200) {
+        setter(0);
+        formRef.current?.reset();
+        ref.current?.click();
+        toast.success("Transaction successful");
+        setTimeout(() => navigate("/app"), 2000);
+      } else {
+        ref.current?.click();
+        toast.error("Transaction failed");
+      }
+    } catch (e) {
+        ref.current?.click();
+      toast.error(
+        e instanceof Error ? e.message : "An unexpected error occurred"
+      );
+    }
+    setLoading1(false);
+  }
   useEffect(() => {
     async function handle() {
       setLoading(false);
@@ -37,7 +69,11 @@ export default function SendEth() {
     handle();
   }, []);
   return (
-    <div className="flex flex-col items-center mt-5 relative  text-white w-[361px] h-[600px] p-4 rounded-lg">
+    <form
+    ref={formRef}
+      onSubmit={(e) => handleClickOutside(e)}
+      className="flex flex-col items-center mt-5 relative  text-white w-[361px] h-[600px] p-4 rounded-lg"
+    >
       <ToastContainer />
       <div className="px-2 w-full relative">
         <ArrowLeft
@@ -62,8 +98,11 @@ export default function SendEth() {
         <input
           type="number"
           onChange={(e) => {
-            setter(parseFloat(e.target.value));
+            if (parseFloat(e.target.value) <= balance) {
+              setter(parseFloat(e.target.value));
+            }
           }}
+          value={amt}
           className="bg-transparent text-5xl font-semibold text-gray-300 w-full text-center focus:outline-none"
           placeholder="0"
         />
@@ -86,14 +125,48 @@ export default function SendEth() {
         </div>
       )}
 
-      <button
-        disabled={amt <= 0}
-        className={` ${
-          amt > 0 ? "bg-blue-600" : "bg-gray-300 text-gray-900"
-        } px-4 py-2 mt-10 rounded-md cursor-not-allowed`}
+      <Popup
+        trigger={
+          <button
+            ref={ref}
+            type="button"
+            disabled={amt <= 0}
+            className={` ${
+              amt > 0 ? "bg-blue-600" : "bg-gray-300 text-gray-900"
+            } px-4 py-2 mt-10 rounded-md cursor-not-allowed`}
+          >
+            Review
+          </button>
+        }
       >
-        Review
-      </button>
-    </div>
+        <div className="flex flex-col items-center">
+          <h2 className="text-xl font-semibold text-center w-full">
+            Transaction
+          </h2>
+          <div className="flex flex-col gap-2 text-gray-400 mt-4  text-sm break-words whitespace-pre-line break-all">
+            <span>You are about to send</span>{" "}
+            <span className="text-gray-200">
+              amt: <span className="">{amt}</span>{" "}
+            </span>
+            <span className="text-gray-200">
+              address: <span className=" ">{id}</span>{" "}
+            </span>
+          </div>
+          <button
+          disabled={loading1}
+            type="submit"
+            className={` ${ 
+              (amt > 0 && !loading1) ? "bg-blue-600" : "bg-gray-300 text-gray-900"
+            } px-4 py-2 mt-10 rounded-md cursor-not-allowed`}
+          >
+            Confirm
+          </button>
+          <p className="text-gray-400 text-sm mt-2 text-center">
+            This address can only receive assets on Ethereum.
+          </p>
+        </div>
+      </Popup>
+      <div className=""></div>
+    </form>
   );
 }
