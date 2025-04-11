@@ -47,9 +47,9 @@ function AnimatedRoutes() {
             <Route path="recieve" element={<Recieve />} />
             <Route path="" element={<Dashboard />}>
               <Route path="" element={<Token />} />
+              <Route path="swap" element={<Swap />} />
             </Route>
             <Route path="coin" element={<Coin name="ETH" />} />
-            <Route path="swap" element={<Swap />} />
           </Route>
         </Routes>
       </AnimatePresence>

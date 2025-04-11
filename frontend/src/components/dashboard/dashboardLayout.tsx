@@ -4,6 +4,7 @@ import { IoCopyOutline } from "react-icons/io5";
 import { useState, useEffect } from "react";
 import { api } from "../../lib/utils";
 import { toast, ToastContainer } from "react-toastify";
+import { motion } from "framer-motion";
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
@@ -66,7 +67,7 @@ export default function DashboardLayout() {
           )}
         </div>
 
-        <div className="flex items-center gap-1 bg-[#2a2a2a] text-xl rounded-full px-2">
+        <div className="flex items-center gap-1 border-1 border-gray-600 bg-[#2a2a2a] text-xl rounded-full px-2">
           <div className="bg-[#2a2a2a] rounded-full p-1 mr-1">
             <img
               src="./eth.webp"
@@ -76,7 +77,7 @@ export default function DashboardLayout() {
               className="rounded-full bg-[#627eea]"
             />
           </div>
-          <div className="border-x-1 border-gray-400 py-1 text-sm flex flex-row items-center px-2 h-full">
+          <div className="border-x-1 border-gray-600 py-1 text-sm flex flex-row items-center px-2 h-full">
             <span className="mr-1">Wallet 1</span>
             <svg
               className="text-gray-400"
@@ -113,7 +114,8 @@ export default function DashboardLayout() {
         </button>
         <button
           className={`{${
-            state == "collectibles" && "border-blue-400 text-blue-400 border-b-2"
+            state == "collectibles" &&
+            "border-blue-400 text-blue-400 border-b-2"
           } py-3 px-4  `}
         >
           Collectibles
@@ -126,7 +128,16 @@ export default function DashboardLayout() {
           Activity
         </button>
       </div>
-      <Outlet />
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0, x: 100 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -100 }}
+        transition={{ duration: 0.2, type: "tween" }}
+        className="overflow-hidden relative flex flex-col"
+      >
+        <Outlet />
+      </motion.div>
     </div>
   );
 }

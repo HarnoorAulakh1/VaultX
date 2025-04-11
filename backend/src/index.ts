@@ -5,9 +5,12 @@ import user from "./routes/user.js";
 import { ethers } from "ethers";
 
 import dotenv from "dotenv";
+import usdt from "./routes/usdt.js";
 dotenv.config();
 const app = express();
 export const provider = new ethers.JsonRpcProvider(process.env.INFURA_URL);
+export const provider_eth = new ethers.JsonRpcProvider(process.env.ETHEREUM_MAIN);
+export const provider_bsc = new ethers.JsonRpcProvider(process.env.BSC_MAIN);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -27,6 +30,7 @@ app.use(
 );
 
 app.use("/user", user);
+app.use("/usdt", usdt);
 
 app.get("/", function (_req, res) {
   res.send({ message: "Hello World" });

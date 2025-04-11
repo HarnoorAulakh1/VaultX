@@ -8,7 +8,7 @@ import { ethers } from "ethers";
 import { provider } from "../index.js";
 import { encrypt, decrypt, base64ToUint8Array } from "../utils/encryption.js";
 
-const map = new Map();
+export const map = new Map();
 const pmap = new Map();
 
 export const login = async (req: Request, res: Response) => {
@@ -191,7 +191,7 @@ export const transaction = async (req: Request, res: Response) => {
     try {
       pmap.set(
         public_id,
-        await decrypt("hello123", {
+        await decrypt(map.get(public_id), {
           encrypted_key: credentials.private_key.encrypted_key,
           iv: credentials.private_key.iv,
           salt: credentials.private_key.salt,
