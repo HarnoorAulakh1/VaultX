@@ -72,14 +72,14 @@ export default function Seed() {
     >
       <ToastContainer />
       <div className="relative px-2 gap-2 w-full ">
-      <ArrowLeft
+        <ArrowLeft
           className="text-[#949494] absolute hover:cursor-pointer"
           size={24}
           onClick={() => navigate(-1)}
         />
-      <h2 className="text-xl font-semibold text-center w-full">
-        Secret Recovery Phrase
-      </h2>
+        <h2 className="text-xl font-semibold text-center w-full">
+          Secret Recovery Phrase
+        </h2>
       </div>
       <p className="text-gray-400 text-center">Enter or paste your phrase</p>
 

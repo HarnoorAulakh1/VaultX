@@ -17,6 +17,11 @@ import Send from "./components/transaction/send";
 import SendEth from "./components/transaction/sendEth";
 import Recieve from "./components/transaction/recieve";
 import Token from "./components/dashboard/tokens";
+import Wallets from "./components/wallet-settings/wallets";
+import WalletSettings from "./components/wallet-settings/walletSettings";
+import { WalletLayout } from "./components/wallet-settings/walletLayout";
+import Remove from "./components/wallet-settings/remove";
+import AddWallet from "./components/wallet-settings/addWallet";
 
 export default function App() {
   return (
@@ -33,7 +38,14 @@ function AnimatedRoutes() {
     <Profile>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<Lock />} />
+          {/* <Route path="/" element={<Lock />} /> */}
+          <Route path="/" element={<WalletLayout />}>
+            <Route path="" element={<Wallets />} />
+            <Route path="/wallet-settings/:id" element={<WalletSettings />} />
+            <Route path="/remove/:id" element={<Remove />} />
+            <Route path="/add-wallet" element={<AddWallet/>} />
+          </Route>
+
           <Route path="/setup" element={<SetupLayout />}>
             <Route index element={<Setup />} />
             <Route path="new-wallet" element={<PasswordSet />} />

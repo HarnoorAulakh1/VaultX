@@ -5,6 +5,10 @@ export interface userInterface {
   private_key?: string;
   password?: string;
   seed_phrase?: string;
+  network?: {
+    name: string;
+    img: string;
+  };
 }
 export const userContext = createContext<{
   user: userInterface;
@@ -15,6 +19,7 @@ export const userContext = createContext<{
     private_key: "",
     password: "",
     seed_phrase:"",
+    network:"",
   },
   dispatch: () => {},
 });
