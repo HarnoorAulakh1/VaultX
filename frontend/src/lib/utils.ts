@@ -9,3 +9,15 @@ export const api = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+
+export const data = [
+  {
+    network: "Ethereum",
+    img: "./eth.webp",
+  },
+  {
+    network: "BSC",
+    img: "./bsc.png",
+  },
+];

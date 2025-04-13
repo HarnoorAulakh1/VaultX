@@ -22,6 +22,8 @@ import WalletSettings from "./components/wallet-settings/walletSettings";
 import { WalletLayout } from "./components/wallet-settings/walletLayout";
 import Remove from "./components/wallet-settings/remove";
 import AddWallet from "./components/wallet-settings/addWallet";
+import ShowKey from "./components/wallet-settings/showKey";
+import Network from "./components/setup.ts/network";
 
 export default function App() {
   return (
@@ -38,18 +40,13 @@ function AnimatedRoutes() {
     <Profile>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          {/* <Route path="/" element={<Lock />} /> */}
-          <Route path="/" element={<WalletLayout />}>
-            <Route path="" element={<Wallets />} />
-            <Route path="/wallet-settings/:id" element={<WalletSettings />} />
-            <Route path="/remove/:id" element={<Remove />} />
-            <Route path="/add-wallet" element={<AddWallet/>} />
-          </Route>
+          <Route path="/" element={<Lock />} />
 
           <Route path="/setup" element={<SetupLayout />}>
             <Route index element={<Setup />} />
             <Route path="new-wallet" element={<PasswordSet />} />
             <Route path="import-wallet" element={<ImportWallet />} />
+            <Route path="network/:id" element={<Network/>} />
             <Route path="seed" element={<Seed />} />
             <Route path="key" element={<PrivateKey />} />
           </Route>
@@ -57,6 +54,13 @@ function AnimatedRoutes() {
             <Route path="send" element={<Send />} />
             <Route path="sendEth/:id" element={<SendEth />} />
             <Route path="recieve" element={<Recieve />} />
+            <Route path="wallet" element={<WalletLayout />}>
+              <Route path="" element={<Wallets />} />
+              <Route path="wallet-settings/:id" element={<WalletSettings />} />
+              <Route path="remove/:id" element={<Remove />} />
+              <Route path="add-wallet/:network" element={<AddWallet />} />
+              <Route path="showKey" element={<ShowKey />} />
+            </Route>
             <Route path="" element={<Dashboard />}>
               <Route path="" element={<Token />} />
               <Route path="swap" element={<Swap />} />

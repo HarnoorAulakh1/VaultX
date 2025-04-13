@@ -8,8 +8,6 @@ export default function Footer() {
   useEffect(() => {
     const url = window.location.href;
     const path = url.split("/").pop();
-    console.log(path == "swap");
-    console.log(path == "app");
     if (path != undefined) setState(path);
   }, []);
   return (

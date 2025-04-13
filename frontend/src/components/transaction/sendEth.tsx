@@ -9,12 +9,15 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { SkeletonTheme } from "react-loading-skeleton";
 import Popup from "../../lib/popup";
 import { useRef } from "react";
+import { userContext } from "../../contexts/user";
+import { useContext } from "react";
 export default function SendEth() {
   const { id } = useParams();
   const [amt, setter] = useState<number>(0);
   const [balance, setBalance] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [loading1, setLoading1] = useState(false);
+  const { user } = useContext(userContext);
   const navigate = useNavigate();
   const ref = useRef<HTMLButtonElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
@@ -48,7 +51,7 @@ export default function SendEth() {
   useEffect(() => {
     async function handle() {
       setLoading(false);
-      const public_id = window.localStorage.getItem("public_id");
+      const public_id = user.public_id;
       try {
         const response = await api.post("/user/checkAddress", {
           public_id: public_id,

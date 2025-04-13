@@ -8,32 +8,35 @@ import { TiTick } from "react-icons/ti";
 import { useState, useEffect, useContext } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { userContext, userInterface } from "../../contexts/user";
-
-const data = [
-  {
-    name: "Ethereum",
-    img: "./eth.webp",
-  },
-  {
-    name: "BSC",
-    img: "./bsc.png",
-  },
-];
+import { data } from "../../lib/utils";
 
 export default function Wallets() {
   const navigate = useNavigate();
-  const [networks, setNetworks] = useState<networkInterface>();
-  const { user, dispatch } = useContext(userContext);
+  const [network, setNetworks] = useState<networkInterface>();
+  const { user } = useContext(userContext);
+  const [togle, setTogle] = useState({
+    network: user.network?.network,
+    img: user.network?.img,
+  });
   const [show, setter] = useState(false);
   useEffect(() => {
-    const networks = window.localStorage.getItem("networks");
-    if (networks) {
-      console.log(JSON.parse(networks));
-      setNetworks(JSON.parse(networks));
+    const networks = JSON.parse(
+      window.localStorage.getItem("networks") || "{}"
+    );
+    const network = networks.find(
+      (item: networkInterface) => item.network === togle.network
+    );
+    if (network) {
+      setNetworks(network);
+    } else {
+      setNetworks({
+        network: user.network?.network,
+        wallets: [],
+      });
     }
-  }, []);
+  }, [togle.network]);
   return (
-    <div className="flex flex-col items-center gap-5 text-[#f4f4f6] w-[361px] h-[600px] p-4">
+    <div className="flex flex-col items-center gap-5 text-[#f4f4f6] w-full h-full p-4">
       <div className="relative px-2 gap-2 w-full flex flex-row items-center">
         <RxCross2
           className="text-[#949494] absolute hover:cursor-pointer"
@@ -49,7 +52,7 @@ export default function Wallets() {
         >
           <div className="bg-[#2a2a2a] rounded-full p-1 mr-1">
             <img
-              src={user.network?.img}
+              src={togle.img}
               alt="Ethereum"
               width={30}
               height={30}
@@ -57,26 +60,22 @@ export default function Wallets() {
             />
           </div>
           <div className="py-1 text-lg flex flex-row items-center  h-full">
-            <span className="mr-1">{user.network?.name}</span>
+            <span className="mr-1">{togle.network}</span>
           </div>
-          <IoIosArrowDown className="text-gray-400 "/>
+          <IoIosArrowDown className="text-gray-400 " />
         </div>
         {show && (
           <div className="absolute flex flex-col gap-4 p-4 bg-[#0e0f14] rounded-lg w-[50%] top-[3rem] z-[1000]">
             {data.map((item) => (
               <div
-                onClick={() =>
-                  dispatch((x: userInterface) => {
-                    return {
-                      ...x,
-                      network: {
-                        name: item.name,
-                        img: item.img,
-                      },
-                    };
-                  })
-                }
+                key={item.network}
                 className="flex flex-row gap-2 items-center"
+                onClick={() => {
+                  setTogle({
+                    network: item.network,
+                    img: data.find((x) => x.network == item.network)?.img || "",
+                  });
+                }}
               >
                 <img
                   src={item.img}
@@ -85,30 +84,33 @@ export default function Wallets() {
                   height={30}
                   className="rounded-full bg-[#627eea]"
                 />
-                <h1>{item.name}</h1>
+                <h1>{item.network}</h1>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      <div className="flex flex-col gap-4 overflow-scroll w-full">
+      <div className="flex flex-col gap-4 overflow-scroll w-full h-full">
         <div className="flex flex-col gap-2 h-full">
-          {networks?.wallets.map((item, index) => (
+          {network?.wallets?.map((item, index) => (
             <Tab
               key={index}
-              img="./eth.webp"
-              address={item.address}
+              img={data.find((x) => x.network == togle.network)?.img || ""}
+              address={item.public_id}
               name={item.name ? item.name : `Wallet${index + 1}`}
+              network={togle.network}
             />
           ))}
-        </div>
-        <div
-          onClick={() => navigate("/add-wallet")}
-          className="flex flex-row gap-4 items-center justify-center hover:cursor-pointer"
-        >
-          <FaPlus className="text-[#4c94ff]" />
-          <h1 className="text-lg text-[#4c94ff]">Add new Ethereum Wallet</h1>
+          <div
+            onClick={() => navigate("/app/wallet/add-wallet/" + togle.network)}
+            className="flex flex-row gap-4 items-center justify-center hover:cursor-pointer"
+          >
+            <FaPlus className="text-[#4c94ff]" />
+            <h1 className="text-lg text-[#4c94ff]">
+              Add new {togle.network} Wallet
+            </h1>
+          </div>
         </div>
       </div>
     </div>
@@ -119,31 +121,59 @@ function Tab({
   img,
   name,
   address,
+  network,
 }: {
   img: string;
   name: string;
   address: string;
+  network: string;
 }) {
   const [copied, setter] = useState(false);
   const navigate = useNavigate();
+  const { user, dispatch } = useContext(userContext);
   function copy() {
     console.log("copied");
     setter(true);
-    navigator.clipboard.writeText(
-      window.localStorage.getItem("public_id") || ""
-    );
+    navigator.clipboard.writeText(address);
     setTimeout(() => {
       setter(false);
     }, 2000);
   }
+  function selectWallet() {
+    dispatch((x: userInterface) => {
+      return {
+        ...x,
+        network: {
+          name,
+          network,
+          img: data.find((x1) => x1.network == network)?.img || "",
+        },
+        public_id: address,
+      };
+    });
+    window.localStorage.setItem(
+      "current",
+      JSON.stringify({
+        public_id: address,
+        network: network,
+        name: name,
+      })
+    );
+  }
   return (
-    <div className="bg-[#202126] relative hover:bg-[#141418] flex flex-row items-center gap-[1rem] p-4 w-full rounded-lg">
+    <div
+      className={`bg-[#202126] z-0 ${
+        user.public_id == address ? "border-2 border-[#334be9]" : ""
+      } relative hover:bg-[#141418] flex flex-row items-center gap-[1rem] p-4 w-full rounded-lg`}
+    >
+       <div onClick={() => selectWallet()}  className="absolute h-full w-full z-0"></div>
       <div className="flex items-center">
         <img src={img} alt="" height={30} width={30} />
       </div>
-      <div className="flex flex-col gap-2 flex-start">
+      <div className="flex relative flex-col gap-2 flex-start">
+        <div onClick={() => selectWallet()}  className="absolute h-full w-full z-0"></div>
         <h1 className="text-lg">{name}</h1>
-        <div className="flex flex-row gap-2 items-center">
+        <div className="flex flex-row gap-2 items-center z-[999]">
           <svg
             width="24"
             height="24"
@@ -156,7 +186,7 @@ function Tab({
               fill="rgba(117, 121, 138, 1)"
             ></path>
           </svg>
-          <div className="flex flex-row gap-2 text-[#969fb0] items-center">
+          <div className="flex flex-row gap-2 text-[#969fb0] items-center ">
             <div className="rounded-md text-lg">
               {address?.substring(0, 6)}...
               {address?.substring(address.length - 4)}
@@ -173,8 +203,8 @@ function Tab({
         </div>
       </div>
       <BiDotsVerticalRounded
-        onClick={() => navigate(`/wallet-settings/${address}`)}
-        className="text-3xl hover:cursor-pointer text-[#969fb0] absolute right-[2rem]"
+        onClick={() => navigate(`/app/wallet/wallet-settings/${address}`)}
+        className="text-3xl hover:cursor-pointer text-[#969fb0] absolute right-[2rem] z-[999]"
       />
     </div>
   );

@@ -7,6 +7,7 @@ import {
   checkAddress,
   setupExistingWallet,
   transaction,
+  privateKey,
 } from "../controllers/user.js";
 import { check } from "../middlewares/auth.js";
 
@@ -21,6 +22,7 @@ router.route("/lock").get(lock as RequestHandler);
 router.route("/checkLogin").post(checkLogin as RequestHandler);
 router.route("/checkAddress").post(checkAddress as RequestHandler);
 router.route("/transaction").post(transaction as RequestHandler);
+router.route("/privateKey").post(privateKey as RequestHandler);
 
 
 export default router;

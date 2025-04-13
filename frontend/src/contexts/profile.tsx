@@ -7,10 +7,13 @@ export default function Profile({ children }: { children: React.ReactNode }) {
     public_id: "",
     private_key: "",
     password: "",
+    seed_phrase: "",
     network:{
-      name: "",
+      network: "",
       img:"",
+      name:"",
     },
+    next:"",
   });
 
   return (

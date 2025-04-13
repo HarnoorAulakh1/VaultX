@@ -1,19 +1,20 @@
 import { Maximize2 } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { IoCopyOutline } from "react-icons/io5";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { api } from "../../lib/utils";
 import { toast, ToastContainer } from "react-toastify";
 import { motion } from "framer-motion";
+import { userContext } from "../../contexts/user";
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
   const [show, set] = useState(false);
   const [state, setState] = useState("");
+  const {user}=useContext(userContext);
   useEffect(() => {
     const url = window.location.href;
     const path = url.split("/").pop();
-    console.log(path == "app");
     if (path != undefined) setState(path);
   }, []);
   async function logout(e: React.MouseEvent<HTMLSpanElement>) {
@@ -25,7 +26,7 @@ export default function DashboardLayout() {
   }
   function copy() {
     navigator.clipboard.writeText(
-      window.localStorage.getItem("public_id") || ""
+      user.public_id
     );
     toast.success("Public address copied to clipboard");
   }
@@ -70,15 +71,15 @@ export default function DashboardLayout() {
         <div className="flex items-center gap-1 border-1 border-gray-600 bg-[#2a2a2a] text-xl rounded-full px-2">
           <div className="bg-[#2a2a2a] rounded-full p-1 mr-1">
             <img
-              src="./eth.webp"
+              src={user.network?.img}
               alt="Ethereum"
               width={24}
               height={24}
               className="rounded-full bg-[#627eea]"
             />
           </div>
-          <div className="border-x-1 border-gray-600 py-1 text-sm flex flex-row items-center px-2 h-full">
-            <span className="mr-1">Wallet 1</span>
+          <div onClick={()=>navigate("/app/wallet")} className="border-x-1 border-gray-600 py-1 text-sm flex flex-row items-center px-2 h-full">
+            <span className="mr-1">{user.network.name}</span>
             <svg
               className="text-gray-400"
               width="16"

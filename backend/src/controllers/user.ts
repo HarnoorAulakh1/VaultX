@@ -5,7 +5,7 @@ import user from "../models/user.js";
 import { createToken } from "../utils/jwt.js";
 import { userInterface } from "../types/user";
 import { ethers } from "ethers";
-import { provider } from "../index.js";
+import { provider, provider_bsc } from "../index.js";
 import { encrypt, decrypt, base64ToUint8Array } from "../utils/encryption.js";
 
 export const map = new Map();
@@ -51,7 +51,15 @@ export const lock = async (req: Request, res: Response) => {
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { password } = req.body;
+    let { public_id, password, network } = req.body;
+    console.log(public_id, password, network);
+    console.log(map);
+    if (public_id && map.has(public_id)) {
+      password = map.get(public_id);
+    } else if (!password) {
+      res.status(400).json({ message: "Field is missing" });
+      return ;
+    }
     const wallet = ethers.Wallet.createRandom();
     const seed_phrase = wallet.mnemonic?.phrase;
     //console.log(password, wallet.privateKey, wallet.address);
@@ -62,6 +70,7 @@ export const register = async (req: Request, res: Response) => {
     const newUser = new user({
       password: hashedPassword,
       public_id: wallet.address,
+      network,
       private_key: {
         encrypted_key: encrypted.encrypted_key,
         iv: encrypted.iv,
@@ -73,13 +82,54 @@ export const register = async (req: Request, res: Response) => {
     res.status(200).json({
       message: "New wallet created successfully",
       public_id: wallet.address,
-      private_key: wallet.privateKey,
-      seed_phrase: seed_phrase,
+      network: network,
     });
   } catch (error) {
     console.error("Error in register:", error);
     res.status(500).json({ message: "Internal server error" });
   }
+};
+
+export const privateKey = async (req: Request, res: Response) => {
+  const { public_id,public_id1 } = req.body;
+  if (!public_id) {
+    res.status(400).json({ message: "Field is missing" });
+    return;
+  }
+  const credentials = await user.findOne({ public_id: public_id });
+  if (!credentials) {
+    res.status(400).json({ message: "Private Key not available" });
+    return;
+  }
+  if (!map.has(public_id1)) {
+    res.status(400).json({ message: "Login again" });
+    return;
+  }
+  if (
+    credentials.private_key != null &&
+    credentials.private_key.encrypted_key != null &&
+    credentials.private_key.iv != null &&
+    credentials.private_key.salt != null &&
+    credentials.private_key.encrypted_key != null &&
+    credentials.private_key.iv != null
+  )
+    try {
+      pmap.set(
+        public_id,
+        await decrypt(map.get(public_id1), {
+          encrypted_key: credentials.private_key.encrypted_key,
+          iv: credentials.private_key.iv,
+          salt: credentials.private_key.salt,
+        })
+      );
+    } catch (error) {
+      console.log("Error in decryption:", error);
+      res.status(500).json({ message: "Login again" });
+    }
+  setTimeout(() => {
+    pmap.delete(public_id);
+  }, 5000);
+  res.status(200).json({ privateKey: pmap.get(public_id) });
 };
 
 export const checkLogin = async (req: Request, res: Response) => {
@@ -103,6 +153,7 @@ export const checkLogin = async (req: Request, res: Response) => {
 
 export const checkAddress = async (req: Request, res: Response) => {
   const { public_id } = req.body;
+  console.log(public_id);
   if (!public_id) {
     res.status(400).json({ message: "Field is missing" });
     return;
@@ -119,7 +170,7 @@ export const checkAddress = async (req: Request, res: Response) => {
 };
 
 export const setupExistingWallet = async (req: Request, res: Response) => {
-  const { password, private_key, seed_phrase } = req.body;
+  const { password, private_key, seed_phrase ,network} = req.body;
   console.log(password.length);
   console.log(password == "demo7890");
   if (!password || !(private_key || seed_phrase)) {
@@ -145,6 +196,7 @@ export const setupExistingWallet = async (req: Request, res: Response) => {
     const newUser = new user({
       password: hashedPassword,
       public_id: wallet.address,
+      network,
       private_key: {
         encrypted_key: encrypted.encrypted_key,
         iv: encrypted.iv,
@@ -164,7 +216,7 @@ export const setupExistingWallet = async (req: Request, res: Response) => {
 };
 
 export const transaction = async (req: Request, res: Response) => {
-  const { public_id, to, amount } = req.body;
+  const { public_id, to, amount, network } = req.body;
   console.log(map);
   if (!public_id || !to || !amount) {
     res.status(400).json({ message: "Field is missing" });
@@ -174,6 +226,9 @@ export const transaction = async (req: Request, res: Response) => {
   //   res.status(400).json({ message: "login again" });
   //   return;
   // }
+  let provider1;
+  if (network == "BSC") provider1 = provider_bsc;
+  else if (network == "Ethereum") provider1 = provider;
   const credentials = await user.findOne({ public_id: public_id });
   if (!credentials) {
     res.status(400).json({ message: "Private Key not available" });
@@ -201,7 +256,7 @@ export const transaction = async (req: Request, res: Response) => {
       console.log("Error in decryption:", error);
       res.status(500).json({ message: "Login again" });
     }
-  const wallet = new ethers.Wallet(pmap.get(public_id), provider);
+  const wallet = new ethers.Wallet(pmap.get(public_id), provider1);
   const tx = await wallet.sendTransaction({
     to: to,
     value: ethers.parseEther(amount),

@@ -5,10 +5,13 @@ import { api } from "../../lib/utils";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { SkeletonTheme } from "react-loading-skeleton";
+import { userContext } from "../../contexts/user";
+import { useContext } from "react";
 export default function Token() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState<number>(0);
+  const { user } = useContext(userContext);
   const times = useRef(0);
   async function handle() {
     console.log(times.current);
@@ -18,7 +21,7 @@ export default function Token() {
     }
     try {
       const response = await api.post("/user/checkAddress", {
-        public_id: window.localStorage.getItem("public_id"),
+        public_id: user.public_id,
       });
       if (response.status === 200) {
         console.log(response.data);

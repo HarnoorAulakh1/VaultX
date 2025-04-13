@@ -5,17 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { userContext } from "../../contexts/user";
 import { useContext } from "react";
+import { networkInterface } from "../../lib/types";
 
 export default function PasswordSet() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
   const { user, dispatch } = useContext(userContext);
-  const [data, setData] = useState({
-    private_key: user.private_key,
-    seed_phrase: user.seed_phrase,
-  });
-  const [show, setter] = useState(false);
   async function handle(e: React.SyntheticEvent) {
     e.preventDefault();
     if (user.private_key || user.seed_phrase) {
@@ -36,12 +32,123 @@ export default function PasswordSet() {
         });
         if (response.status === 200) {
           toast(response.data.message);
-          window.localStorage.setItem("public_id", response.data.public_id);
-          setter(true);
-          setData({
-            private_key: response.data.private_key,
-            seed_phrase: response.data.seed_phrase,
+          console.log(response.data);
+          const networks = window.localStorage.getItem("networks");
+          const data = response.data;
+          if (networks) {
+            const parsedNetworks = JSON.parse(networks);
+            const find = parsedNetworks.find(
+              (x: networkInterface) => x.network === data.network
+            );
+            if (find) {
+              const wallets = find.wallets;
+              wallets.push({
+                name: `Wallet${find.wallets.length + 1}`,
+                public_id: data.public_id,
+              });
+              const store = parsedNetworks.map((x: networkInterface) => {
+                if (x.network === data.network) {
+                  return find;
+                } else {
+                  return x;
+                }
+              });
+              dispatch((x) => {
+                return {
+                  ...x,
+                  public_id: data.public_id,
+                  network: {
+                    network: data.network,
+                    name: `Wallet${find.wallets.length + 1}`,
+                    img:
+                      user.network?.img ||
+                      data.find(
+                        (x1: { name: string; img: string }) =>
+                          x1.name === data.network
+                      )?.img ||
+                      "",
+                  },
+                };
+              });
+              window.localStorage.setItem("networks", JSON.stringify(store));
+              window.localStorage.setItem(
+                "current",
+                JSON.stringify({
+                  network: data.network,
+                  public_id: data.public_id,
+                  name: `Wallet${find.wallets.length + 1}`,
+                })
+              );
+            } else {
+              parsedNetworks.push({
+                network: data.network,
+                wallets: [{ name: "Wallet1", public_id: data.public_id }],
+              });
+              dispatch((x) => {
+                return {
+                  ...x,
+                  public_id: data.public_id,
+                  network: {
+                    network: data.network,
+                    name: `Wallet1`,
+                    img:
+                      user.network?.img ||
+                      data.find(
+                        (x1: { name: string; img: string }) =>
+                          x1.name === data.network
+                      )?.img ||
+                      "",
+                  },
+                };
+              });
+              window.localStorage.setItem(
+                "networks",
+                JSON.stringify(parsedNetworks)
+              );
+              window.localStorage.setItem(
+                "current",
+                JSON.stringify({
+                  network: data.network,
+                  public_id: data.public_id,
+                  name: `Wallet1`,
+                })
+              );
+            }
+          } else {
+            const store = JSON.stringify([
+              {
+                network: data.network,
+                wallets: [{ name: "Wallet1", public_id: data.public_id }],
+              },
+            ]);
+            window.localStorage.setItem("networks", store);
+          }
+          window.localStorage.setItem(
+            "current",
+            JSON.stringify({
+              network: data.network,
+              public_id: data.public_id,
+              name: "Wallet1",
+            })
+          );
+          dispatch((x) => {
+            return {
+              ...x,
+              public_id: data.public_id,
+              network: {
+                name: "Wallet1",
+                network: data.network,
+                img:
+                  user.network?.img ||
+                  data.find(
+                    (x1: { name: string; img: string }) =>
+                      x1.name === data.network
+                  )?.img ||
+                  "",
+              },
+            };
           });
+          navigate("/");
         }
       } catch (error) {
         toast.error(
@@ -54,27 +161,131 @@ export default function PasswordSet() {
     } else {
       const response = await api.post("/user/setup", {
         password: password,
+        network: user.network?.network,
       });
+      const networks = window.localStorage.getItem("networks");
+      const data = response.data;
       if (response.status === 200) {
         toast(response.data.message);
-        window.localStorage.setItem("public_id", response.data.public_id);
-        setter(true);
-        setData({
-          private_key: response.data.private_key,
-          seed_phrase: response.data.seed_phrase,
-        });
+        console.log(response.data);
+        if (networks) {
+          const parsedNetworks = JSON.parse(networks);
+          const find = parsedNetworks.find(
+            (x: networkInterface) => x.network === data.network
+          );
+          if (find) {
+            const wallets = find.wallets;
+            wallets.push({
+              name: `Wallet${find.wallets.length + 1}`,
+              public_id: data.public_id,
+            });
+            const store = parsedNetworks.map((x: networkInterface) => {
+              if (x.network === data.network) {
+                return find;
+              } else {
+                return x;
+              }
+            });
+            dispatch((x) => {
+              return {
+                ...x,
+                public_id: data.public_id,
+                network: {
+                  network: data.network,
+                  name: `Wallet${find.wallets.length + 1}`,
+                  img:
+                    user.network?.img ||
+                    data.find(
+                      (x1: { name: string; img: string }) =>
+                        x1.name === data.network
+                    )?.img ||
+                    "",
+                },
+              };
+            });
+            window.localStorage.setItem(
+              "current",
+              JSON.stringify({
+                network: data.network,
+                public_id: data.public_id,
+                name: `Wallet${find.wallets.length + 1}`,
+              })
+            );
+            window.localStorage.setItem("networks", JSON.stringify(store));
+          } else {
+            parsedNetworks.push({
+              network: data.network,
+              wallets: [{ name: "Wallet1", public_id: data.public_id }],
+            });
+            dispatch((x) => {
+              return {
+                ...x,
+                public_id: data.public_id,
+                network: {
+                  network: data.network,
+                  name: "Wallet1",
+                  img:
+                    user.network?.img ||
+                    data.find(
+                      (x1: { name: string; img: string }) =>
+                        x1.name === data.network
+                    )?.img ||
+                    "",
+                },
+              };
+            });
+            window.localStorage.setItem(
+              "networks",
+              JSON.stringify(parsedNetworks)
+            );
+            window.localStorage.setItem(
+              "current",
+              JSON.stringify({
+                network: data.network,
+                public_id: data.public_id,
+                name: "Wallet1",
+              })
+            );
+          }
+        } else {
+          const store = JSON.stringify([
+            {
+              network: data.network,
+              wallets: [{ name: "Wallet1", public_id: data.public_id }],
+            },
+          ]);
+          window.localStorage.setItem("networks", store);
+          dispatch((x) => {
+            return {
+              ...x,
+              public_id: data.public_id,
+              network: {
+                network: data.network,
+                name: "Wallet1",
+                img:
+                  user.network?.img ||
+                  data.find(
+                    (x1: { name: string; img: string }) =>
+                      x1.name === data.network
+                  )?.img ||
+                  "",
+              },
+            };
+          });
+          window.localStorage.setItem(
+            "current",
+            JSON.stringify({
+              network: data.network,
+              public_id: data.public_id,
+              name: "Wallet1",
+            })
+          );
+        }
+        navigate("/");
       }
     }
   }
-  async function next(e: React.SyntheticEvent) {
-    e.preventDefault();
-    setter(false);
-    setData({
-      private_key: "",
-      seed_phrase: "",
-    });
-    navigate("/");
-  }
+
   return (
     <form
       onSubmit={(e) => handle(e)}
@@ -124,26 +335,6 @@ export default function PasswordSet() {
       >
         Next
       </button>
-      {show && (
-        <div className="flex flex-col break-words whitespace-normal overflow-hidden py-8 px-2 gap-2 w-full ">
-          <h1>Note down these credentionals and store in a secure loaction.</h1>
-          <span className="text-sm text-gray-400 ">
-            <span className="underline">Seed phrase:</span> <br />
-            {data.seed_phrase}
-          </span>
-          <span className="text-sm text-gray-400">
-            <span className="underline">Private key:</span> <br />
-            {data.private_key}
-          </span>
-          <button
-            type="button"
-            onClick={(e) => next(e)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-          >
-            Continue
-          </button>
-        </div>
-      )}
     </form>
   );
 }

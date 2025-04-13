@@ -1,13 +1,13 @@
 export interface networkInterface {
-  token: string;
-  chainId?: number;
+  network: string;
   wallets: {
     name: string;
-    address: string;
+    public_id: string;
   }[];
 }
 
 export interface walletInterface {
     name: string;
-    address: string;
+    network: string;
+    public_id: string;
 }

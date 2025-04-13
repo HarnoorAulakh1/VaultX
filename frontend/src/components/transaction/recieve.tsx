@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { api } from "../../lib/utils";
 import { ToastContainer, toast } from "react-toastify";
 import QRCode from "react-qr-code";
@@ -7,15 +7,18 @@ import { useNavigate } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { SkeletonTheme } from "react-loading-skeleton";
+import { userContext } from "../../contexts/user";
 
 export default function Recieve() {
   const [address, set] = useState<string>();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const {user}=useContext(userContext);
   useEffect(() => {
     async function handle() {
       setLoading(false);
-      const public_id = window.localStorage.getItem("public_id");
+      const public_id = user.public_id;
+      console.log(user);   
       if (!public_id) return;
       try {
         const checkAddress = await api.post("/user/checkAddress", {
@@ -34,7 +37,7 @@ export default function Recieve() {
       setLoading(true);
     }
     handle();
-  }, []);
+  }, [user]);
   return (
     <div className="bg-black text-white w-[361px] h-[600px] p-6 flex flex-col items-center">
       <ToastContainer />

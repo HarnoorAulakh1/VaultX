@@ -4,10 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import { api } from "../lib/utils";
-import { userContext } from "../contexts/user";
+import { userContext, userInterface } from "../contexts/user";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import Loader from "react-js-loader";
+import { data } from "../lib/utils";
 
 export default function Lock() {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,7 +19,17 @@ export default function Lock() {
   useEffect(() => {
     async function handle() {
       setLoading(false);
-      const public_id = window.localStorage.getItem("public_id");
+      let public_id = "";
+      if (
+        !window.localStorage.getItem("current") ||
+        window.localStorage.getItem("current") == null
+      )
+        navigate("/setup");
+      const networks = JSON.parse(
+        window.localStorage.getItem("current") || "{}"
+      );
+      if (networks) public_id = networks.public_id;
+      console.log(public_id);
       if (!public_id) {
         navigate("/setup");
       }
@@ -36,7 +47,7 @@ export default function Lock() {
           console.log(error);
         }
       } else {
-        window.localStorage.removeItem("public_id");
+        window.localStorage.removeItem("public_id1");
         navigate("/setup");
       }
       setLoading(true);
@@ -45,9 +56,28 @@ export default function Lock() {
   }, []);
   async function handle(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     const password = e.currentTarget.password.value;
-    const public_id = window.localStorage.getItem("public_id");
+    setLoading(false);
+    let public_id = "";
+    const networks = JSON.parse(window.localStorage.getItem("current") || "");
+    if (networks) public_id = networks.public_id;
     if (!public_id) navigate("/setup");
+    dispatch((x: userInterface) => {
+      return {
+        ...x,
+        public_id: networks.public_id,
+        network: {
+          name: networks.name,
+          network: networks.network,
+          img:
+            data.find(
+              (x1: { network: string; img: string }) =>
+                x1.network === networks.network
+            )?.img || "",
+        },
+      };
+    });
     try {
       const response = await api.post("/user/login", {
         public_id: public_id,
@@ -55,11 +85,7 @@ export default function Lock() {
       });
       console.log(response.data);
       if (response.status === 200) {
-        dispatch({
-          public_id: response.data.public_id,
-          private_key: response.data.private_key,
-          password: password,
-        });
+        window.localStorage.setItem("public_id1",public_id);
         navigate("/app");
       }
     } catch (error) {
@@ -127,7 +153,7 @@ export default function Lock() {
                   className="w-full bg-[#1a1a1a] border border-[#3a3a3a] rounded-lg px-4 py-3 outline-none focus:border-blue-500"
                 />
                 <button
-                type="button"
+                  type="button"
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                   onClick={() => setShowPassword(!showPassword)}
                 >
@@ -144,7 +170,9 @@ export default function Lock() {
                 Unlock
               </button>
             </div>
-            <button type="button" className="text-gray-400 text-sm">Forgot password</button>
+            <button type="button" className="text-gray-400 text-sm">
+              Forgot password
+            </button>
           </div>
         </motion.form>
       ) : (

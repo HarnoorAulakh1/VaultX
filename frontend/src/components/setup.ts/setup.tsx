@@ -36,7 +36,7 @@ export default function Setup() {
                 agreed ? "" : "brightness-50"
               }`}
               disabled={!agreed}
-              onClick={() => navigate("/setup/new-wallet")}
+              onClick={() => navigate("/setup/network/new-wallet")}
             >
               Create a new wallet
             </button>
@@ -45,7 +45,7 @@ export default function Setup() {
                 agreed ? "" : "brightness-50"
               }`}
               disabled={!agreed}
-              onClick={() => navigate("/setup/import-wallet")}
+              onClick={() => navigate("/setup/network/import-wallet")}
             >
               I already have a wallet
             </button>
