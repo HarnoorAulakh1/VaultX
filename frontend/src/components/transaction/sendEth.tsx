@@ -28,7 +28,9 @@ export default function SendEth() {
       const response = await api.post("/user/transaction", {
         to: id,
         amount: String(amt),
-        public_id: window.localStorage.getItem("public_id"),
+        public_id: user.public_id,
+        public_id1:window.localStorage.getItem("public_id1"),
+        network: user.network.network,
       });
       if (response.status === 200) {
         setter(0);

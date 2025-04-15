@@ -5,7 +5,7 @@ import user from "./routes/user.js";
 import { ethers } from "ethers";
 
 import dotenv from "dotenv";
-import usdt from "./routes/usdt.js";
+import erc from "./routes/erc.js";
 dotenv.config();
 const app = express();
 export const provider = new ethers.JsonRpcProvider(process.env.INFURA_URL);
@@ -30,7 +30,7 @@ app.use(
 );
 
 app.use("/user", user);
-app.use("/usdt", usdt);
+app.use("/usdt", erc);
 
 app.get("/", function (_req, res) {
   res.send({ message: "Hello World" });

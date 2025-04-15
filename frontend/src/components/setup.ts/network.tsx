@@ -37,14 +37,10 @@ function List() {
   const { dispatch } = useContext(userContext);
   const { id } = useParams();
   function handle() {
-    dispatch((x:userInterface) => {
+    dispatch((x: userInterface) => {
       return {
         ...x,
-        network: {
-          ...x.network,
-          network: data[selected.index].network,
-          img: data[selected.index].img,
-        },
+        toggleNetwork: data[selected.index].network,
       };
     });
     navigate("/setup/" + id);
@@ -54,7 +50,10 @@ function List() {
       <h1 className="text-[#949494] text-lg">Recommended networks</h1>
       <div className="flex flex-col gap-2 w-full overflow-scroll pb-[3rem]">
         {data.map((item, index) => (
-          <div key={index} onClick={() => setSelected({ index: index, state: true })}>
+          <div
+            key={index}
+            onClick={() => setSelected({ index: index, state: true })}
+          >
             <Tab
               name={item.network}
               img={item.img}

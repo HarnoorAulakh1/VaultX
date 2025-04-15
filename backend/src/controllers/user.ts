@@ -207,6 +207,7 @@ export const setupExistingWallet = async (req: Request, res: Response) => {
     await newUser.save();
     res.status(200).json({
       message: "Wallet retrieved successfully",
+      network: network,
       public_id: address,
     });
   } catch (error) {
@@ -216,16 +217,17 @@ export const setupExistingWallet = async (req: Request, res: Response) => {
 };
 
 export const transaction = async (req: Request, res: Response) => {
-  const { public_id, to, amount, network } = req.body;
+  const { public_id,public_id1, to, amount, network } = req.body;
   console.log(map);
-  if (!public_id || !to || !amount) {
+  console.log(req.body)
+  if (!public_id || !to || !amount || !public_id1 || !network) {
     res.status(400).json({ message: "Field is missing" });
     return;
   }
-  // if (!map.has(public_id)) {
-  //   res.status(400).json({ message: "login again" });
-  //   return;
-  // }
+  if (!map.has(public_id1)) {
+    res.status(400).json({ message: "login again" });
+    return;
+  }
   let provider1;
   if (network == "BSC") provider1 = provider_bsc;
   else if (network == "Ethereum") provider1 = provider;
@@ -246,7 +248,7 @@ export const transaction = async (req: Request, res: Response) => {
     try {
       pmap.set(
         public_id,
-        await decrypt(map.get(public_id), {
+        await decrypt(map.get(public_id1), {
           encrypted_key: credentials.private_key.encrypted_key,
           iv: credentials.private_key.iv,
           salt: credentials.private_key.salt,
@@ -261,6 +263,8 @@ export const transaction = async (req: Request, res: Response) => {
     to: to,
     value: ethers.parseEther(amount),
   });
+  const receipt = await tx.wait();
+  console.log(receipt);
   pmap.delete(public_id);
-  res.status(200).json({ message: "Transaction successful" });
+  res.status(200).json({ message: "Transaction successful", receipt: receipt });
 };

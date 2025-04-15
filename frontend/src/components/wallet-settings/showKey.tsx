@@ -1,22 +1,22 @@
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { IoCopyOutline } from "react-icons/io5";
 import { TiTick } from "react-icons/ti";
-import { useEffect, useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../lib/utils";
-import { userContext } from "../../contexts/user";
 
 export default function ShowKey() {
   const [copied, setter] = useState(false);
   const [privateKey, setPrivateKey] = useState("");
-  const { user } = useContext(userContext);
+  //const { user } = useContext(userContext);
+  const {id}=useParams();
   const navigate = useNavigate();
   useEffect(() => {
     async function handle() {
       const public_id1 = window.localStorage.getItem("public_id1");
       try {
         const response = await api.post("/user/privateKey", {
-          public_id: user.public_id,
+          public_id: id,
           public_id1: public_id1,
         });
         if (response.status === 200) {

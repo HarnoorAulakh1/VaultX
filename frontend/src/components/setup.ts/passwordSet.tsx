@@ -21,11 +21,13 @@ export default function PasswordSet() {
           response = await api.post("/user/setupExistingWallet", {
             password: password,
             private_key: user.private_key,
+            network: user.togleNetwork,
           });
         else
           response = await api.post("/user/setupExistingWallet", {
             password: password,
             seed_phrase: user.seed_phrase,
+            network: user.togleNetwork,
           });
         dispatch((x) => {
           return { ...x, private_key: "", seed_phrase: "" };
@@ -38,8 +40,9 @@ export default function PasswordSet() {
           if (networks) {
             const parsedNetworks = JSON.parse(networks);
             const find = parsedNetworks.find(
-              (x: networkInterface) => x.network === data.network
+              (x: networkInterface) => x.network === user.togleNetwork
             );
+            console.log("find", find);
             if (find) {
               const wallets = find.wallets;
               wallets.push({
@@ -47,18 +50,19 @@ export default function PasswordSet() {
                 public_id: data.public_id,
               });
               const store = parsedNetworks.map((x: networkInterface) => {
-                if (x.network === data.network) {
+                if (x.network === user.togleNetwork) {
                   return find;
                 } else {
                   return x;
                 }
               });
+              console.log("store", store);
               dispatch((x) => {
                 return {
                   ...x,
                   public_id: data.public_id,
                   network: {
-                    network: data.network,
+                    network: user.togleNetwork || "",
                     name: `Wallet${find.wallets.length + 1}`,
                     img:
                       user.network?.img ||
@@ -71,14 +75,12 @@ export default function PasswordSet() {
                 };
               });
               window.localStorage.setItem("networks", JSON.stringify(store));
-              window.localStorage.setItem(
-                "current",
-                JSON.stringify({
-                  network: data.network,
-                  public_id: data.public_id,
-                  name: `Wallet${find.wallets.length + 1}`,
-                })
-              );
+              const value = JSON.stringify({
+                network: user.togleNetwork,
+                public_id: data.public_id,
+                name: `Wallet${find.wallets.length + 1}`,
+              });
+              window.localStorage.setItem("current", value);
             } else {
               parsedNetworks.push({
                 network: data.network,
@@ -108,7 +110,7 @@ export default function PasswordSet() {
               window.localStorage.setItem(
                 "current",
                 JSON.stringify({
-                  network: data.network,
+                  network: user.togleNetwork,
                   public_id: data.public_id,
                   name: `Wallet1`,
                 })
@@ -161,7 +163,7 @@ export default function PasswordSet() {
     } else {
       const response = await api.post("/user/setup", {
         password: password,
-        network: user.network?.network,
+        network: user.togleNetwork,
       });
       const networks = window.localStorage.getItem("networks");
       const data = response.data;

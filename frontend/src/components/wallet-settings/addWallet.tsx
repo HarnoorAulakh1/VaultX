@@ -110,10 +110,10 @@ export default function AddWallet() {
               <h1 className="text-lg text-[#969fb0]">Import Existing Wallet</h1>
             </div>
             <div className="flex flex-col gap-2 items-center w-full">
-              <Tab name="Recovery Phrase" link="/setup/seed">
+              <Tab name="Recovery Phrase" link="/setup/network/seed">
                 <FaPlus />
               </Tab>
-              <Tab name="Private Key" link="/setup/key">
+              <Tab name="Private Key" link="/setup/network/key">
                 <IoKeySharp />
               </Tab>
             </div>

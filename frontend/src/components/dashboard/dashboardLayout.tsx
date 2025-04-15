@@ -3,14 +3,16 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { IoCopyOutline } from "react-icons/io5";
 import { useState, useEffect, useContext } from "react";
 import { api } from "../../lib/utils";
-import { toast, ToastContainer } from "react-toastify";
+import {  ToastContainer } from "react-toastify";
 import { motion } from "framer-motion";
 import { userContext } from "../../contexts/user";
+import { TiTick } from "react-icons/ti";
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
   const [show, set] = useState(false);
   const [state, setState] = useState("");
+  const [copied, setter] = useState(false);
   const {user}=useContext(userContext);
   useEffect(() => {
     const url = window.location.href;
@@ -25,10 +27,13 @@ export default function DashboardLayout() {
     }
   }
   function copy() {
+    setter(true);
+    setTimeout(() => {
+      setter(false);
+    }, 2000);
     navigator.clipboard.writeText(
       user.public_id
     );
-    toast.success("Public address copied to clipboard");
   }
   return (
     <div className="flex flex-col  h-full text-sm text-white overflow-hidden">
@@ -95,10 +100,14 @@ export default function DashboardLayout() {
             </svg>
           </div>
 
-          <IoCopyOutline
-            className="text-gray-400 hover:cursor-pointer"
-            onClick={() => copy()}
-          />
+           {copied ? (
+                          <TiTick className="hover:cursor-pointer  text-[#334be9] text-xl" />
+                        ) : (
+                          <IoCopyOutline
+                            onClick={() => copy()}
+                            className="text-xl hover:cursor-pointer text-[#969fb0]"
+                          />
+                        )}
         </div>
 
         <div className="flex gap-2">

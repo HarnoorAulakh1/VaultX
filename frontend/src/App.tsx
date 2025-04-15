@@ -59,7 +59,7 @@ function AnimatedRoutes() {
               <Route path="wallet-settings/:id" element={<WalletSettings />} />
               <Route path="remove/:id" element={<Remove />} />
               <Route path="add-wallet/:network" element={<AddWallet />} />
-              <Route path="showKey" element={<ShowKey />} />
+              <Route path="showKey/:id" element={<ShowKey />} />
             </Route>
             <Route path="" element={<Dashboard />}>
               <Route path="" element={<Token />} />

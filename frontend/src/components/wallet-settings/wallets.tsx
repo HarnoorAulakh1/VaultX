@@ -13,7 +13,7 @@ import { data } from "../../lib/utils";
 export default function Wallets() {
   const navigate = useNavigate();
   const [network, setNetworks] = useState<networkInterface>();
-  const { user } = useContext(userContext);
+  const { user, dispatch } = useContext(userContext);
   const [togle, setTogle] = useState({
     network: user.network?.network,
     img: user.network?.img,
@@ -35,6 +35,19 @@ export default function Wallets() {
       });
     }
   }, [togle.network]);
+
+  function togleNetworks(item: { network: string; img: string }) {
+    dispatch((x: userInterface) => {
+      return {
+        ...x,
+        togleNetwork: item.network,
+      };
+    });
+    setTogle({
+      network: item.network,
+      img: data.find((x) => x.network == item.network)?.img || "",
+    });
+  }
   return (
     <div className="flex flex-col items-center gap-5 text-[#f4f4f6] w-full h-full p-4">
       <div className="relative px-2 gap-2 w-full flex flex-row items-center">
@@ -70,12 +83,7 @@ export default function Wallets() {
               <div
                 key={item.network}
                 className="flex flex-row gap-2 items-center"
-                onClick={() => {
-                  setTogle({
-                    network: item.network,
-                    img: data.find((x) => x.network == item.network)?.img || "",
-                  });
-                }}
+                onClick={() => togleNetworks(item)}
               >
                 <img
                   src={item.img}
@@ -166,12 +174,18 @@ function Tab({
         user.public_id == address ? "border-2 border-[#334be9]" : ""
       } relative hover:bg-[#141418] flex flex-row items-center gap-[1rem] p-4 w-full rounded-lg`}
     >
-       <div onClick={() => selectWallet()}  className="absolute h-full w-full z-0"></div>
+      <div
+        onClick={() => selectWallet()}
+        className="absolute h-full w-full z-0"
+      ></div>
       <div className="flex items-center">
         <img src={img} alt="" height={30} width={30} />
       </div>
       <div className="flex relative flex-col gap-2 flex-start">
-        <div onClick={() => selectWallet()}  className="absolute h-full w-full z-0"></div>
+        <div
+          onClick={() => selectWallet()}
+          className="absolute h-full w-full z-0"
+        ></div>
         <h1 className="text-lg">{name}</h1>
         <div className="flex flex-row gap-2 items-center z-[999]">
           <svg

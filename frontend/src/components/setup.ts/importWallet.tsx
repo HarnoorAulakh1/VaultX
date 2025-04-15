@@ -6,7 +6,7 @@ export default function ImportWallet(){
     const navigate = useNavigate();
     const { user } = useContext(userContext);
     useEffect(() => {
-      console.log(user);
+      //console.log(user);
     }
     , [user.network]);
     return (

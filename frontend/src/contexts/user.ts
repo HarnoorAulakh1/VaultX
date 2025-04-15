@@ -10,6 +10,7 @@ export interface userInterface {
     name: string;
     img: string;
   };
+  togleNetwork?:string;
   next?: string;
 }
 export const userContext = createContext<{

@@ -24,7 +24,7 @@ export default function Token() {
         public_id: user.public_id,
       });
       if (response.status === 200) {
-        console.log(response.data);
+        //console.log(response.data);
         setBalance(Number(parseFloat(response.data.balance).toFixed(5)));
       } else {
         console.log("error");
@@ -35,13 +35,8 @@ export default function Token() {
     setLoading(true);
   }
   useEffect(() => {
-    const interval = setInterval(() => {
       handle();
-    }, 20000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+  }, [user.public_id]);
 
   return (
     <>
