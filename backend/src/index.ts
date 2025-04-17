@@ -10,7 +10,7 @@ dotenv.config();
 const app = express();
 export const provider = new ethers.JsonRpcProvider(process.env.INFURA_URL);
 export const provider_eth = new ethers.JsonRpcProvider(process.env.ETHEREUM_MAIN);
-export const provider_bsc = new ethers.JsonRpcProvider(process.env.BSC_MAIN);
+export const provider_bsc = new ethers.JsonRpcProvider(process.env.BSC_TEST);
 app.use(express.json());
 app.use(cookieParser());
 

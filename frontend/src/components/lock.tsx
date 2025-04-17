@@ -29,7 +29,6 @@ export default function Lock() {
         window.localStorage.getItem("current") || "{}"
       );
       if (networks) public_id = networks.public_id;
-      console.log(public_id);
       if (!public_id) {
         navigate("/setup");
       }
@@ -180,7 +179,7 @@ export default function Lock() {
           <Loader
             type="ping-cube"
             color="#ffffff"
-            title={"F**K  u  B****H"}
+            title={"VaultX"}
             size={100}
           />
         </div>

@@ -5,46 +5,49 @@ import { useParams } from "react-router-dom";
 import { walletInterface } from "../../lib/types";
 import { useContext } from "react";
 import { userContext } from "../../contexts/user";
-import { ToastContainer,toast} from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function Remove() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const {user}=useContext(userContext);
+  const { user } = useContext(userContext);
+  console.log(user.toggleNetwork);
   function remove(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
-    if(id==user.public_id){
-        toast.error("You cannot remove your current wallet");
-        return;
+    if (id == user.public_id) {
+      toast.error("You cannot remove your current wallet");
+      return;
     }
-    const networks = JSON.parse(window.localStorage.getItem("networks")|| "{}");
+    const networks = JSON.parse(
+      window.localStorage.getItem("networks") || "{}"
+    );
     if (networks) {
       const network = networks.find(
-        (item: walletInterface) => item.network === user.network?.network
+        (item: walletInterface) => item.network === user.toggleNetwork
       );
       const wallets = network?.wallets.filter(
         (item: walletInterface) => item.public_id !== id
       );
-      const store=networks.map((item: walletInterface) => {
-        if (item.network === user.network?.network) {
-            return {
-                ...item,
-                wallets
-            }
+      const store = networks.map((item: walletInterface) => {
+        if (item.network === user.toggleNetwork) {
+          return {
+            ...item,
+            wallets: wallets,
+          };
         }
         return item;
       });
-      //  console.log("store", store);
-      window.localStorage.setItem(
-        "networks",
-        JSON.stringify(store)
-      );
+      console.log(user.toggleNetwork);
+      console.log("network", network);
+      console.log("wallets", wallets);
+      console.log("store", store);
+      window.localStorage.setItem("networks", JSON.stringify(store));
     }
-    navigate("/");
+      navigate("/app/wallet");
   }
   return (
     <div className="flex flex-col relative items-center gap-5 text-[#f4f4f6] w-full h-full p-4">
-      <ToastContainer/>
+      <ToastContainer />
       <div className="relative px-2 gap-2 w-full flex flex-row items-center">
         <ArrowLeft
           className="text-[#949494] absolute hover:cursor-pointer"

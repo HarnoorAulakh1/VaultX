@@ -22,10 +22,8 @@ export const balance = async (req: Request, res: Response) => {
     res.status(400).json({ message: "Private Key not available" });
     return;
   }
-  const address = tokens.find(
-    (x: { name: string; address: string }) => x.name === token_name
-  )?.address;
   const provider = getProvider(network);
+  const address= getAddress(token_name);
   const usdt = new ethers.Contract(address || "", usdtAbi, provider);
   const balance = await usdt.balanceOf(public_id);
   const decimals = await usdt.decimals();

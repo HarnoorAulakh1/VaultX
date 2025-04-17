@@ -5,7 +5,17 @@
   "description": "A Chrome extension built with React",
   "action": {
     "default_popup": "index.html",
-    "default_title": "React Extension"
+    "default_title": "React Extension",
+    "default_icon": {
+      "16": "vault.png",
+      "48": "vault.png",
+      "128": "vault.png"
+    }
+  },
+  "icons": {
+    "16": "vault.png",
+    "48": "vault.png",
+    "128": "vault.png"
   },
   "permissions": [
     "storage",
@@ -23,5 +33,5 @@
       "js": ["contentScript.js"]
     }
   ],
-  "host_permissions": ["<all_urls>", "clipboardRead", "clipboardWrite"]
+  "host_permissions": ["<all_urls>"]
 }

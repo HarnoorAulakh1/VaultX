@@ -7,6 +7,7 @@ import { userInterface } from "../types/user";
 import { ethers } from "ethers";
 import { provider, provider_bsc } from "../index.js";
 import { encrypt, decrypt, base64ToUint8Array } from "../utils/encryption.js";
+import { getProvider } from "../utils/contractAddresses.js";
 
 export const map = new Map();
 const pmap = new Map();
@@ -58,7 +59,7 @@ export const register = async (req: Request, res: Response) => {
       password = map.get(public_id);
     } else if (!password) {
       res.status(400).json({ message: "Field is missing" });
-      return ;
+      return;
     }
     const wallet = ethers.Wallet.createRandom();
     const seed_phrase = wallet.mnemonic?.phrase;
@@ -91,7 +92,7 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const privateKey = async (req: Request, res: Response) => {
-  const { public_id,public_id1 } = req.body;
+  const { public_id, public_id1 } = req.body;
   if (!public_id) {
     res.status(400).json({ message: "Field is missing" });
     return;
@@ -152,7 +153,7 @@ export const checkLogin = async (req: Request, res: Response) => {
 };
 
 export const checkAddress = async (req: Request, res: Response) => {
-  const { public_id } = req.body;
+  const { public_id, network } = req.body;
   console.log(public_id);
   if (!public_id) {
     res.status(400).json({ message: "Field is missing" });
@@ -162,7 +163,12 @@ export const checkAddress = async (req: Request, res: Response) => {
     res.status(400).json({ message: "Invalid address" });
     return;
   }
-  const balance = await provider.getBalance(public_id);
+  const provider1 = getProvider(network);
+  if (!provider1) {
+    res.status(400).json({ message: "Invalid network" });
+    return;
+  }
+  const balance = await provider1.getBalance(public_id);
   res.status(200).json({
     message: "account is valid",
     balance: ethers.formatEther(balance),
@@ -170,7 +176,7 @@ export const checkAddress = async (req: Request, res: Response) => {
 };
 
 export const setupExistingWallet = async (req: Request, res: Response) => {
-  const { password, private_key, seed_phrase ,network} = req.body;
+  const { password, private_key, seed_phrase, network } = req.body;
   console.log(password.length);
   console.log(password == "demo7890");
   if (!password || !(private_key || seed_phrase)) {
@@ -217,9 +223,9 @@ export const setupExistingWallet = async (req: Request, res: Response) => {
 };
 
 export const transaction = async (req: Request, res: Response) => {
-  const { public_id,public_id1, to, amount, network } = req.body;
-  console.log(map);
-  console.log(req.body)
+  const { public_id, public_id1, to, amount, network } = req.body;
+  //console.log(map);
+  //console.log(req.body)
   if (!public_id || !to || !amount || !public_id1 || !network) {
     res.status(400).json({ message: "Field is missing" });
     return;
@@ -228,15 +234,13 @@ export const transaction = async (req: Request, res: Response) => {
     res.status(400).json({ message: "login again" });
     return;
   }
-  let provider1;
-  if (network == "BSC") provider1 = provider_bsc;
-  else if (network == "Ethereum") provider1 = provider;
+  let provider1 = getProvider(network);
   const credentials = await user.findOne({ public_id: public_id });
   if (!credentials) {
     res.status(400).json({ message: "Private Key not available" });
     return;
   }
-  console.log(credentials);
+  //console.log(credentials);
   if (
     credentials.private_key != null &&
     credentials.private_key.encrypted_key != null &&

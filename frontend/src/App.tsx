@@ -2,7 +2,7 @@ import "./App.css";
 import Lock from "./components/lock";
 import Dashboard from "./components/dashboard/dashboardLayout";
 import AppLayout from "./components/applayout";
-import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Coin from "./components/coin";
 import Swap from "./components/swap";
@@ -34,12 +34,11 @@ export default function App() {
 }
 
 function AnimatedRoutes() {
-  const location = useLocation();
 
   return (
     <Profile>
       <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
+        <Routes >
           <Route path="/" element={<Lock />} />
 
           <Route path="/setup" element={<SetupLayout />}>

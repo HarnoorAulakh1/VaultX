@@ -13,7 +13,7 @@ export default function AppLayout() {
   const { dispatch } = useContext(userContext);
   // const [loading, setLoading] = useState(false);
   useEffect(() => {
-    const current=window.localStorage.getItem("current");
+    const current = window.localStorage.getItem("current");
     if (!current) {
       navigate("/setup");
     }
@@ -30,6 +30,7 @@ export default function AppLayout() {
             return {
               ...x,
               public_id: data2.public_id,
+              toggleNetwork: data2.network,
               network: {
                 name: data2.name,
                 network: data2.network,

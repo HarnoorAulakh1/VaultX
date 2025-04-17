@@ -22,6 +22,7 @@ export default function Token() {
     try {
       const response = await api.post("/user/checkAddress", {
         public_id: user.public_id,
+        network: user.network.network,
       });
       if (response.status === 200) {
         //console.log(response.data);

@@ -14,6 +14,7 @@ export default function ShowKey() {
   useEffect(() => {
     async function handle() {
       const public_id1 = window.localStorage.getItem("public_id1");
+      console.log(public_id1, id);
       try {
         const response = await api.post("/user/privateKey", {
           public_id: id,

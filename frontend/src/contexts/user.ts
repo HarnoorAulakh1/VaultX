@@ -10,7 +10,7 @@ export interface userInterface {
     name: string;
     img: string;
   };
-  togleNetwork?:string;
+  toggleNetwork?:string;
   next?: string;
 }
 export const userContext = createContext<{
@@ -27,6 +27,7 @@ export const userContext = createContext<{
       name: "",
       img: "",
     },
+    toggleNetwork:"",
     next:""
   },
   dispatch: () => {},

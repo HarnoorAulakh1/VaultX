@@ -17,19 +17,18 @@ export default function WalletSettings() {
   useEffect(() => {
     const networks = window.localStorage.getItem("networks");
     if (networks) {
-      console.log("networks", JSON.parse(networks));
       const network = JSON.parse(networks).find(
-        (item: walletInterface) => item.network === user.network?.network
+        (item: walletInterface) => item.network === user.toggleNetwork
       );
       const wallet = network?.wallets.find(
         (item: walletInterface) => item.public_id === id
       );
-      if (!wallet) navigate(-1);
-      else setWallet(wallet);
+      //console.log(network, wallet);
+      if (wallet) setWallet(wallet);
     }
-  }, []);
+  }, [user.toggleNetwork]);
   function copy() {
-    console.log("copied");
+    //console.log("copied");
     setter(true);
     navigator.clipboard.writeText(user.public_id || "");
     setTimeout(() => {
@@ -78,7 +77,7 @@ export default function WalletSettings() {
           </div>
         </div>
         <div
-          onClick={() => navigate("/app/wallet/showKey/"+id)}
+          onClick={() => navigate("/app/wallet/showKey/" + id)}
           className="bg-[#202126] rounded-xl w-full hover:bg-[#141418]"
         >
           <div className="flex flex-row text-xl items-center gap-2 p-4 justify-between">
@@ -90,7 +89,10 @@ export default function WalletSettings() {
         </div>
         <div className="bg-[#202126] rounded-xl w-full hover:bg-[#141418] ">
           <div
-            onClick={() => navigate("/app/wallet/remove/" + id)}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/app/wallet/remove/" + id);
+            }}
             className="flex flex-row text-xl items-center gap-2 p-4 justify-between"
           >
             <h1 className="text-[#ff575a]">Remove Wallet</h1>

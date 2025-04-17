@@ -14,17 +14,25 @@ export default function Wallets() {
   const navigate = useNavigate();
   const [network, setNetworks] = useState<networkInterface>();
   const { user, dispatch } = useContext(userContext);
-  const [togle, setTogle] = useState({
+  const [toggle, setTogle] = useState({
     network: user.network?.network,
     img: user.network?.img,
   });
   const [show, setter] = useState(false);
   useEffect(() => {
+    if (!toggle.network) {
+      setTogle({
+        network: user.network?.network,
+        img: user.network?.img,
+      });
+    }
+  }, [user.network?.network, user.network?.img]);
+  useEffect(() => {
     const networks = JSON.parse(
       window.localStorage.getItem("networks") || "{}"
     );
     const network = networks.find(
-      (item: networkInterface) => item.network === togle.network
+      (item: networkInterface) => item.network === toggle.network
     );
     if (network) {
       setNetworks(network);
@@ -34,13 +42,13 @@ export default function Wallets() {
         wallets: [],
       });
     }
-  }, [togle.network]);
+  }, [toggle.network, user.network?.network]);
 
   function togleNetworks(item: { network: string; img: string }) {
     dispatch((x: userInterface) => {
       return {
         ...x,
-        togleNetwork: item.network,
+        toggleNetwork: item.network,
       };
     });
     setTogle({
@@ -65,7 +73,7 @@ export default function Wallets() {
         >
           <div className="bg-[#2a2a2a] rounded-full p-1 mr-1">
             <img
-              src={togle.img}
+              src={toggle.img}
               alt="Ethereum"
               width={30}
               height={30}
@@ -73,7 +81,7 @@ export default function Wallets() {
             />
           </div>
           <div className="py-1 text-lg flex flex-row items-center  h-full">
-            <span className="mr-1">{togle.network}</span>
+            <span className="mr-1">{toggle.network}</span>
           </div>
           <IoIosArrowDown className="text-gray-400 " />
         </div>
@@ -104,19 +112,19 @@ export default function Wallets() {
           {network?.wallets?.map((item, index) => (
             <Tab
               key={index}
-              img={data.find((x) => x.network == togle.network)?.img || ""}
+              img={data.find((x) => x.network == toggle.network)?.img || ""}
               address={item.public_id}
               name={item.name ? item.name : `Wallet${index + 1}`}
-              network={togle.network}
+              network={toggle.network}
             />
           ))}
           <div
-            onClick={() => navigate("/app/wallet/add-wallet/" + togle.network)}
+            onClick={() => navigate("/app/wallet/add-wallet/" + toggle.network)}
             className="flex flex-row gap-4 items-center justify-center hover:cursor-pointer"
           >
             <FaPlus className="text-[#4c94ff]" />
             <h1 className="text-lg text-[#4c94ff]">
-              Add new {togle.network} Wallet
+              Add new {toggle.network} Wallet
             </h1>
           </div>
         </div>
