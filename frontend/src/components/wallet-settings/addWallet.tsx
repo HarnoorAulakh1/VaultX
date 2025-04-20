@@ -22,11 +22,11 @@ export default function AddWallet() {
       (item: walletInterface) => item.network === network
     );
     const public_id1 = window.localStorage.getItem("public_id1");
-    const response = await api.post("/user/setup", {
-      public_id: public_id1,
-      network: network,
-    });
     try {
+      const response = await api.post("/user/setup", {
+        public_id: public_id1,
+        network: network,
+      });
       if (response.status == 200) {
         const data = await response.data;
         if (network1) {
@@ -35,8 +35,7 @@ export default function AddWallet() {
             name: `Wallet${network1.wallets.length + 1}`,
           });
           window.localStorage.setItem("networks", JSON.stringify(networks));
-        }
-        else{
+        } else {
           const newNetwork = {
             network: network,
             wallets: [
@@ -54,6 +53,7 @@ export default function AddWallet() {
         console.log("error");
       }
     } catch (error) {
+      navigate(-1);
       console.log(error);
     }
     setLoading(false);

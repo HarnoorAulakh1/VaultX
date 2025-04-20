@@ -7,19 +7,32 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { SkeletonTheme } from "react-loading-skeleton";
 import { userContext } from "../../contexts/user";
 import { useContext } from "react";
+import { data } from "../../lib/utils";
+import { chainId, tokens } from "../../lib/config";
+import { tokenContext } from "../../contexts/tokenContext";
+
 export default function Token() {
   const navigate = useNavigate();
+  const [chainId1, setChainId] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState<number>(0);
   const { user } = useContext(userContext);
   const times = useRef(0);
+  console.log(chainId1);
+  useEffect(() => {
+    console.log(user);
+    console.log(user.network.network.toLowerCase());
+    setChainId(
+      chainId[user.network.network.toLowerCase() as keyof typeof chainId]
+    );
+  }, [user]);
   async function handle() {
-    console.log(times.current);
     if (times.current == 0) {
       setLoading(false);
       times.current++;
     }
     try {
+      if (!user.public_id) return;
       const response = await api.post("/user/checkAddress", {
         public_id: user.public_id,
         network: user.network.network,
@@ -36,11 +49,11 @@ export default function Token() {
     setLoading(true);
   }
   useEffect(() => {
-      handle();
+    handle();
   }, [user.public_id]);
 
   return (
-    <>
+    <div className="w-full overflow-scroll">
       <div className="flex flex-col  items-center mt-10 mb-5">
         <div className="flex items-center">
           <div className="flex  gap-2">
@@ -53,7 +66,10 @@ export default function Token() {
             ) : (
               <h1 className="text-3xl font-bold">{balance}</h1>
             )}
-            <span className="text-3xl font-bold"> ETH</span>
+            <span className="text-3xl font-bold">
+              {" "}
+              {data.find((x) => x.network == user.network.network)?.token}
+            </span>
           </div>
 
           <RefreshCw
@@ -98,29 +114,114 @@ export default function Token() {
       <span className="text-gray-400 ">Swap</span>
     </button> */}
       </div>
+      <div className="w-full">
+        {chainId1 != 0 &&
+          chainId1 != undefined &&
+          tokens[chainId1 as keyof typeof tokens].map((token) => (
+            <Tab
+              key={token.name}
+              chainId1={chainId1}
+              img={token.img}
+              address={token.address || ""}
+              coingeckoId={token.coingeckoId}
+              decimals={token.decimals}
+              symbol={token.symbol}
+              name={token.name}
+            />
+          ))}
+      </div>
+    </div>
+  );
+}
 
-      <div
-        className="p-4 hover:bg-[#1d1d1d] text-sm"
-        onClick={() => navigate("/app/coin")}
-      >
-        <div className="flex items-center">
-          <img
-            src="./eth.webp"
-            alt="Ethereum"
-            width={40}
-            height={40}
-            className="rounded-full bg-[#627eea]"
-          />
-          <div className="ml-3">
-            <div className="font-bold ">Ethereum</div>
-            <div className="text-gray-400">0 ETH</div>
+function Tab({
+  chainId1,
+  name,
+  symbol,
+  img,
+  address,
+  coingeckoId,
+  decimals,
+}: {
+  chainId1: number;
+  name: string;
+  symbol: string;
+  img: string;
+  address: string;
+  coingeckoId: string;
+  decimals: number;
+}) {
+  const [balance, setBalance] = useState<number>(-1);
+  const [price, setprice] = useState<number>(-1);
+  const { user } = useContext(userContext);
+  useEffect(() => {
+    try {
+      async function handle() {
+        const response = await api.post("/user/balance", {
+          public_id: user.public_id,
+          network: user.network.network,
+          contractAddress: address,
+        });
+        if (response.status == 200) {
+          setBalance(response.data.balance);
+        }
+        const response1 = await api.get(`/user/getPrice/${coingeckoId}`);
+        if (response1.status == 200) {
+          setprice(response1.data.price);
+        }
+      }
+      handle();
+    } catch (e) {
+      console.log(e);
+      setBalance(0);
+    }
+  }, [coingeckoId]);
+  const { setToken } = useContext(tokenContext);
+  const navigate = useNavigate();
+  return (
+    <div
+      className="p-4 hover:bg-[#1d1d1d] text-sm"
+      onClick={() => {
+        setToken({
+          chainId: chainId1.toString(),
+          contractAddress: address,
+          name: name,
+          symbol: symbol,
+          img: img,
+          coingeckoId: coingeckoId,
+          decimals: decimals,
+        });
+        navigate("/app/coin");
+      }}
+    >
+      <div className="flex items-center">
+        <img
+          src={img}
+          alt="Ethereum"
+          width={40}
+          height={40}
+          className="rounded-full bg-[#627eea]"
+        />
+        <div className="ml-3">
+          <div className="font-bold ">{name}</div>
+          <div className="text-gray-400">
+            {balance != -1 && balance} {symbol}
           </div>
-          <div className="ml-auto text-right">
-            <div className="font-bold ">$0.00</div>
-            <div className="text-red-500">$0.00</div>
+        </div>
+        <div className="ml-auto text-right">
+          <div className="text-white">
+            {price != -1 ? (
+              `$${price}`
+            ) : (
+              <SkeletonTheme baseColor="#202020" highlightColor="#444">
+                <p className="w-[5rem]">
+                  <Skeleton />
+                </p>
+              </SkeletonTheme>
+            )}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

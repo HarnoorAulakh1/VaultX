@@ -11,3 +11,14 @@ export interface walletInterface {
     network: string;
     public_id: string;
 }
+
+export interface tokenInterface {
+  chainId: string;
+  contractAddress: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  img: string;
+  coingeckoId: string;
+  isNative?: boolean;
+}

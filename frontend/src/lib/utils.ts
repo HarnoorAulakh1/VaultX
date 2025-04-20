@@ -14,10 +14,12 @@ export const api = axios.create({
 export const data = [
   {
     network: "Ethereum",
+    token: "ETH",
     img: "./eth.webp",
   },
   {
     network: "BSC",
+    token: "BNB",
     img: "./bsc.png",
   },
 ];

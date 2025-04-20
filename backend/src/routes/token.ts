@@ -9,7 +9,7 @@ import {
   transaction,
 } from "../controllers/user.js";
 import { check } from "../middlewares/auth.js";
-import { balance } from "../controllers/erc.js";
+import { balance } from "../controllers/token.js";
 
 
 const router = Router();

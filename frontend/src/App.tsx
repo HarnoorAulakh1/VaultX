@@ -24,6 +24,7 @@ import Remove from "./components/wallet-settings/remove";
 import AddWallet from "./components/wallet-settings/addWallet";
 import ShowKey from "./components/wallet-settings/showKey";
 import Network from "./components/setup.ts/network";
+import TokenProvider from "./contexts/token";
 
 export default function App() {
   return (
@@ -34,40 +35,44 @@ export default function App() {
 }
 
 function AnimatedRoutes() {
-
   return (
     <Profile>
-      <AnimatePresence mode="wait">
-        <Routes >
-          <Route path="/" element={<Lock />} />
+      <TokenProvider>
+        <AnimatePresence mode="wait">
+          <Routes>
+            <Route path="/" element={<Lock />} />
 
-          <Route path="/setup" element={<SetupLayout />}>
-            <Route index element={<Setup />} />
-            <Route path="new-wallet" element={<PasswordSet />} />
-            <Route path="import-wallet" element={<ImportWallet />} />
-            <Route path="network/:id" element={<Network/>} />
-            <Route path="seed" element={<Seed />} />
-            <Route path="key" element={<PrivateKey />} />
-          </Route>
-          <Route path="/app" element={<AppLayout />}>
-            <Route path="send" element={<Send />} />
-            <Route path="sendEth/:id" element={<SendEth />} />
-            <Route path="recieve" element={<Recieve />} />
-            <Route path="wallet" element={<WalletLayout />}>
-              <Route path="" element={<Wallets />} />
-              <Route path="wallet-settings/:id" element={<WalletSettings />} />
-              <Route path="remove/:id" element={<Remove />} />
-              <Route path="add-wallet/:network" element={<AddWallet />} />
-              <Route path="showKey/:id" element={<ShowKey />} />
+            <Route path="/setup" element={<SetupLayout />}>
+              <Route index element={<Setup />} />
+              <Route path="new-wallet" element={<PasswordSet />} />
+              <Route path="import-wallet" element={<ImportWallet />} />
+              <Route path="network/:id" element={<Network />} />
+              <Route path="seed" element={<Seed />} />
+              <Route path="key" element={<PrivateKey />} />
             </Route>
-            <Route path="" element={<Dashboard />}>
-              <Route path="" element={<Token />} />
-              <Route path="swap" element={<Swap />} />
+            <Route path="/app" element={<AppLayout />}>
+              <Route path="send" element={<Send />} />
+              <Route path="sendEth/:id" element={<SendEth />} />
+              <Route path="recieve" element={<Recieve />} />
+              <Route path="wallet" element={<WalletLayout />}>
+                <Route path="" element={<Wallets />} />
+                <Route
+                  path="wallet-settings/:id"
+                  element={<WalletSettings />}
+                />
+                <Route path="remove/:id" element={<Remove />} />
+                <Route path="add-wallet/:network" element={<AddWallet />} />
+                <Route path="showKey/:id" element={<ShowKey />} />
+              </Route>
+              <Route path="" element={<Dashboard />}>
+                <Route path="" element={<Token />} />
+                <Route path="swap" element={<Swap />} />
+              </Route>
+              <Route path="coin" element={<Coin/>} />
             </Route>
-            <Route path="coin" element={<Coin name="ETH" />} />
-          </Route>
-        </Routes>
-      </AnimatePresence>
+          </Routes>
+        </AnimatePresence>
+      </TokenProvider>
     </Profile>
   );
 }

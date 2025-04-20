@@ -8,6 +8,8 @@ import {
   setupExistingWallet,
   transaction,
   privateKey,
+  getPrice,
+  balance,
 } from "../controllers/user.js";
 import { check } from "../middlewares/auth.js";
 
@@ -23,6 +25,8 @@ router.route("/checkLogin").post(checkLogin as RequestHandler);
 router.route("/checkAddress").post(checkAddress as RequestHandler);
 router.route("/transaction").post(transaction as RequestHandler);
 router.route("/privateKey").post(privateKey as RequestHandler);
+router.route("/getPrice/:id").get(check,getPrice as RequestHandler);
+router.route("/balance").post(balance as RequestHandler);
 
 
 export default router;

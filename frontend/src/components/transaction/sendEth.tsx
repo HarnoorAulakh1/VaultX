@@ -11,6 +11,7 @@ import Popup from "../../lib/popup";
 import { useRef } from "react";
 import { userContext } from "../../contexts/user";
 import { useContext } from "react";
+import { tokenContext } from "../../contexts/tokenContext";
 export default function SendEth() {
   const { id } = useParams();
   const [amt, setter] = useState<number>(0);
@@ -18,20 +19,29 @@ export default function SendEth() {
   const [loading, setLoading] = useState(false);
   const [loading1, setLoading1] = useState(false);
   const { user } = useContext(userContext);
+  const { token } = useContext(tokenContext);
   const navigate = useNavigate();
   const ref = useRef<HTMLButtonElement>(null);
-    const formRef = useRef<HTMLFormElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   async function handleClickOutside(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading1(true);
     try {
+      console.log({
+        to: id,
+        amount: String(amt),
+        public_id: user.public_id,
+        public_id1: window.localStorage.getItem("public_id1"),
+        network: user.network.network,
+      });
       const response = await api.post("/user/transaction", {
         to: id,
         amount: String(amt),
         public_id: user.public_id,
-        public_id1:window.localStorage.getItem("public_id1"),
+        public_id1: window.localStorage.getItem("public_id1"),
         network: user.network.network,
       });
+      console.log(response.data.message);
       if (response.status === 200) {
         setter(0);
         formRef.current?.reset();
@@ -43,7 +53,7 @@ export default function SendEth() {
         toast.error("Transaction failed");
       }
     } catch (e) {
-        ref.current?.click();
+      ref.current?.click();
       toast.error(
         e instanceof Error ? e.message : "An unexpected error occurred"
       );
@@ -55,8 +65,10 @@ export default function SendEth() {
       setLoading(false);
       const public_id = user.public_id;
       try {
-        const response = await api.post("/user/checkAddress", {
+        const response = await api.post("/user/balance", {
           public_id: public_id,
+          network: user.network.network,
+          contractAddress: token.contractAddress,
         });
         if (response.status === 200) {
           setBalance(response.data.balance);
@@ -75,7 +87,7 @@ export default function SendEth() {
   }, []);
   return (
     <form
-    ref={formRef}
+      ref={formRef}
       onSubmit={(e) => handleClickOutside(e)}
       className="flex flex-col items-center mt-5 relative  text-white w-[361px] h-[600px] p-4 rounded-lg"
     >
@@ -86,7 +98,7 @@ export default function SendEth() {
           size={24}
           onClick={() => navigate(-1)}
         />
-        <h2 className="text-xl font-semibold text-center w-full">Send ETH</h2>
+        <h2 className="text-xl font-semibold text-center w-full">Send {token.name}</h2>
       </div>
 
       <div
@@ -112,8 +124,8 @@ export default function SendEth() {
           placeholder="0"
         />
         <div className="flex items-center mt-2">
-          <img src="./eth.webp" alt="ETH" className="w-10 h-10" />
-          <span className="ml-2 text-gray-400 text-2xl font-semibold">ETH</span>
+          <img src={user.network?.img} alt="ETH" className="w-10 h-10" />
+          <span className="ml-2 text-gray-400 text-2xl font-semibold">{token.symbol}</span>
         </div>
         <p className="text-gray-500 text-sm mt-1">$0.00</p>
       </div>
@@ -126,7 +138,7 @@ export default function SendEth() {
         </SkeletonTheme>
       ) : (
         <div className="mt-4 bg-gray-700 text-gray-400 px-4 py-1 rounded-md text-sm">
-          Max: {balance} ETH
+          Max: {balance} {token.symbol}
         </div>
       )}
 
@@ -158,10 +170,10 @@ export default function SendEth() {
             </span>
           </div>
           <button
-          disabled={loading1}
+            disabled={loading1}
             type="submit"
-            className={` ${ 
-              (amt > 0 && !loading1) ? "bg-blue-600" : "bg-gray-300 text-gray-900"
+            className={` ${
+              amt > 0 && !loading1 ? "bg-blue-600" : "bg-gray-300 text-gray-900"
             } px-4 py-2 mt-10 rounded-md cursor-not-allowed`}
           >
             Confirm

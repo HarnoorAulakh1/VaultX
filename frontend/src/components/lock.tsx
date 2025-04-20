@@ -32,22 +32,23 @@ export default function Lock() {
       if (!public_id) {
         navigate("/setup");
       }
-      const checkAddress = await api.post("/user/checkAddress", {
-        public_id: public_id,
-      });
-      if (checkAddress.status == 200) {
-        try {
+      try {
+        const checkAddress = await api.post("/user/checkAddress", {
+          public_id: public_id,
+          network: networks.network,
+        });
+        if (checkAddress.status == 200) {
           const response = await api.post("/user/checkLogin");
           if (response.status === 200) {
             console.log(response.data);
             navigate("/app");
           }
-        } catch (error) {
-          console.log(error);
+        } else {
+          window.localStorage.removeItem("public_id1");
+          navigate("/setup");
         }
-      } else {
-        window.localStorage.removeItem("public_id1");
-        navigate("/setup");
+      } catch (error) {
+        console.log(error);
       }
       setLoading(true);
     }
@@ -84,13 +85,14 @@ export default function Lock() {
       });
       console.log(response.data);
       if (response.status === 200) {
-        window.localStorage.setItem("public_id1",public_id);
+        window.localStorage.setItem("public_id1", public_id);
         navigate("/app");
       }
     } catch (error) {
       console.log(error);
       toast.error("Invalid password");
     }
+    setLoading(true);
   }
 
   return (

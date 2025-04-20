@@ -23,6 +23,7 @@ export default function Recieve() {
       try {
         const checkAddress = await api.post("/user/checkAddress", {
           public_id: public_id,
+          network: user.network.network,
         });
         if (checkAddress.status == 200) {
           set(public_id);

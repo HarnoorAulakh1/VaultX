@@ -2,15 +2,19 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../lib/utils";
 import { ArrowLeft } from "lucide-react";
+import { useContext } from "react";
+import { userContext } from "../../contexts/user";
 export default function Send() {
   const [address, set] = useState("");
   const [check, setCheck] = useState(false);
   const navigate = useNavigate();
+  const { user } = useContext(userContext);
   useEffect(() => {
     async function handle() {
       try {
         const response = await api.post("/user/checkAddress", {
           public_id: address,
+          network:user.network.network
         });
         console.log(response.status);
         if (response.status === 200) {

@@ -2,19 +2,22 @@ import { FiArrowLeft } from "react-icons/fi";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import { tokenContext } from "../contexts/tokenContext";
 
-export default function Coin({ name }: { name: string }) {
+export default function Coin() {
   const navigate = useNavigate();
   const [price, setPrice] = useState(-1);
+  const { token } = useContext(tokenContext);
   useEffect(() => {
     async function handle() {
-      const price = await axios.get(
-        "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+      const response = await axios.get(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${token.coingecko}&vs_currencies=usd`
       );
-      setPrice(price.data.ethereum.usd);
+      console.log(response.data);
+      setPrice(response.data[token.coingeckoId].usd);
     }
     const interval = setInterval(() => handle(), 10000);
     return () => {
@@ -30,11 +33,11 @@ export default function Coin({ name }: { name: string }) {
           size={24}
           onClick={() => navigate(-1)}
         />
-        <h1 className="text-xl text-white text-center w-full">{name}</h1>
+        <h1 className="text-xl text-white text-center w-full">{token.name}</h1>
       </div>
       <div className="flex flex-col items-center gap-4 overflow-scroll h-[84%]">
         <img
-          src="./eth.webp"
+          src={token.img}
           alt="Ethereum"
           width={100}
           height={100}
@@ -73,7 +76,9 @@ export default function Coin({ name }: { name: string }) {
             <div className="flex items-center justify-between px-4 py-2 border-b border-[#2a2a2a]">
               <p>Token</p>
               <div className="flex flex-row items-center gap-1 text-[#4c94ff]">
-                <p>Ethereum(ETH)</p>
+                <p>
+                  {token.name} {`(${token.symbol})`}
+                </p>
                 <FiArrowUpRight />
               </div>
             </div>

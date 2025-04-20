@@ -8,6 +8,14 @@ import { ethers } from "ethers";
 import { provider, provider_bsc } from "../index.js";
 import { encrypt, decrypt, base64ToUint8Array } from "../utils/encryption.js";
 import { getProvider } from "../utils/contractAddresses.js";
+import axios from "axios";
+
+const abi = [
+  "function transfer(address to, uint amount) public returns (bool)",
+  "function balanceOf(address account) view returns (uint256)",
+  "function decimals() view returns (uint8)",
+];
+
 
 export const map = new Map();
 const pmap = new Map();
@@ -154,7 +162,6 @@ export const checkLogin = async (req: Request, res: Response) => {
 
 export const checkAddress = async (req: Request, res: Response) => {
   const { public_id, network } = req.body;
-  console.log(public_id);
   if (!public_id) {
     res.status(400).json({ message: "Field is missing" });
     return;
@@ -222,53 +229,214 @@ export const setupExistingWallet = async (req: Request, res: Response) => {
   }
 };
 
-export const transaction = async (req: Request, res: Response) => {
-  const { public_id, public_id1, to, amount, network } = req.body;
-  //console.log(map);
-  //console.log(req.body)
-  if (!public_id || !to || !amount || !public_id1 || !network) {
+// export const transaction = async (req: Request, res: Response) => {
+//   const { public_id, public_id1, to, amount, network } = req.body;
+//   //console.log(map);
+//   //console.log(req.body)
+//   if (!public_id || !to || !amount || !public_id1 || !network) {
+//     res.status(400).json({ message: "Field is missing" });
+//     return;
+//   }
+//   if (!map.has(public_id1)) {
+//     res.status(400).json({ message: "login again" });
+//     return;
+//   }
+//   let provider1 = getProvider(network);
+//   const credentials = await user.findOne({ public_id: public_id });
+//   if (!credentials) {
+//     res.status(400).json({ message: "Private Key not available" });
+//     return;
+//   }
+//   //console.log(credentials);
+//   if (
+//     credentials.private_key != null &&
+//     credentials.private_key.encrypted_key != null &&
+//     credentials.private_key.iv != null &&
+//     credentials.private_key.salt != null &&
+//     credentials.private_key.encrypted_key != null &&
+//     credentials.private_key.iv != null
+//   )
+//     try {
+//       pmap.set(
+//         public_id,
+//         await decrypt(map.get(public_id1), {
+//           encrypted_key: credentials.private_key.encrypted_key,
+//           iv: credentials.private_key.iv,
+//           salt: credentials.private_key.salt,
+//         })
+//       );
+//     } catch (error) {
+//       console.log("Error in decryption:", error);
+//       res.status(500).json({ message: "Login again" });
+//     }
+//   const wallet = new ethers.Wallet(pmap.get(public_id), provider1);
+//   const tx = await wallet.sendTransaction({
+//     to: to,
+//     value: ethers.parseEther(amount),
+//   });
+//   const receipt = await tx.wait();
+//   console.log(receipt);
+//   pmap.delete(public_id);
+//   res.status(200).json({ message: "Transaction successful", receipt: receipt });
+// };
+
+export const getPrice = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  console.log(id);
+  if(!id) {
     res.status(400).json({ message: "Field is missing" });
     return;
   }
+  try {
+    const response = await axios.get(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd`
+    );
+    if (response.status == 200) {
+      const price = response.data[id].usd;
+      res.status(200).json({ price: price });
+    }
+  } catch (error) {
+    //console.log(error);
+    res.status(500).json({ message: "Error fetching price" });
+    return;
+  }
+};
+
+export const transaction = async (req: Request, res: Response) => {
+  const {
+    public_id,
+    public_id1,
+    to,
+    amount,
+    network,
+    contractAddress,
+  } = req.body;
+  if (!public_id || !to || !amount || !public_id1  || !network) {
+    res.status(400).json({ message: "Field is missing" });
+    return;
+  }
+  console.log("hello1",map)
   if (!map.has(public_id1)) {
     res.status(400).json({ message: "login again" });
     return;
   }
-  let provider1 = getProvider(network);
+  console.log("hello2")
   const credentials = await user.findOne({ public_id: public_id });
   if (!credentials) {
     res.status(400).json({ message: "Private Key not available" });
     return;
   }
-  //console.log(credentials);
-  if (
-    credentials.private_key != null &&
-    credentials.private_key.encrypted_key != null &&
-    credentials.private_key.iv != null &&
-    credentials.private_key.salt != null &&
-    credentials.private_key.encrypted_key != null &&
-    credentials.private_key.iv != null
-  )
-    try {
-      pmap.set(
-        public_id,
-        await decrypt(map.get(public_id1), {
-          encrypted_key: credentials.private_key.encrypted_key,
-          iv: credentials.private_key.iv,
-          salt: credentials.private_key.salt,
-        })
-      );
-    } catch (error) {
-      console.log("Error in decryption:", error);
-      res.status(500).json({ message: "Login again" });
+  console.log(req.body);
+  try {
+    const provider = getProvider(network);
+
+    const isNative = !contractAddress || contractAddress == '' ? true : false;
+
+    if (isNative) {
+      if (
+        credentials.private_key != null &&
+        credentials.private_key.encrypted_key != null &&
+        credentials.private_key.iv != null &&
+        credentials.private_key.salt != null &&
+        credentials.private_key.encrypted_key != null &&
+        credentials.private_key.iv != null
+      )
+        try {
+          pmap.set(
+            public_id,
+            await decrypt(map.get(public_id1), {
+              encrypted_key: credentials.private_key.encrypted_key,
+              iv: credentials.private_key.iv,
+              salt: credentials.private_key.salt,
+            })
+          );
+        } catch (error) {
+          console.log("Error in decryption:", error);
+          res.status(500).json({ message: "Login again" });
+        }
+      const wallet = new ethers.Wallet(pmap.get(public_id), provider);
+      const tx = await wallet.sendTransaction({
+        to: to,
+        value: ethers.parseEther(amount),
+      });
+      const receipt = await tx.wait();
+      console.log(receipt);
+      pmap.delete(public_id);
+      res
+        .status(200)
+        .json({ message: "Transaction successful", receipt: receipt });
+    } else {
+      if (
+        credentials.private_key != null &&
+        credentials.private_key.encrypted_key != null &&
+        credentials.private_key.iv != null &&
+        credentials.private_key.salt != null &&
+        credentials.private_key.encrypted_key != null &&
+        credentials.private_key.iv != null
+      )
+        try {
+          pmap.set(
+            public_id,
+            await decrypt(map.get(public_id1), {
+              encrypted_key: credentials.private_key.encrypted_key,
+              iv: credentials.private_key.iv,
+              salt: credentials.private_key.salt,
+            })
+          );
+        } catch (error) {
+          console.log("Error in decryption:", error);
+          res.status(500).json({ message: "Login again" });
+        }
+      const wallet = new ethers.Wallet(pmap.get(public_id), provider);
+      const usdt = new ethers.Contract(contractAddress, abi, wallet);
+      pmap.delete(public_id);
+      const decimals = await usdt.decimals();
+      const formattedAmount = ethers.parseUnits(amount, decimals);
+      const tx = await usdt.transfer(to, formattedAmount);
+      const receipt = await tx.wait();
+      res
+        .status(200)
+        .json({ message: "Transaction successful", receipt: receipt });
     }
-  const wallet = new ethers.Wallet(pmap.get(public_id), provider1);
-  const tx = await wallet.sendTransaction({
-    to: to,
-    value: ethers.parseEther(amount),
-  });
-  const receipt = await tx.wait();
-  console.log(receipt);
-  pmap.delete(public_id);
-  res.status(200).json({ message: "Transaction successful", receipt: receipt });
+  } catch (error) {
+    console.error("Transaction error:", error);
+    res.status(500).json({ message: "Error processing transaction" });
+  }
 };
+
+export const balance = async (req: Request, res: Response) => {
+  const { public_id, network, contractAddress } = req.body;
+ // console.log("Balance request:", req.body);
+  if (!public_id || !network) {
+    res.status(400).json({ message: "Field is missing" });
+    return;
+  }
+
+  try {
+    const provider = getProvider(network);
+
+    const isNative = (!contractAddress || contractAddress.length==0) ? true : false
+    console.log("isNative", isNative, contractAddress);
+
+    let formattedBalance: string;
+
+    if (isNative) {
+      const rawBalance = await provider?.getBalance(public_id);
+      formattedBalance = ethers.formatEther(rawBalance || "0");
+    } else {
+      const tokenContract = new ethers.Contract(contractAddress, abi, provider);
+      const rawBalance = await tokenContract.balanceOf(public_id);
+      const decimals = await tokenContract.decimals();
+      formattedBalance = ethers.formatUnits(rawBalance, decimals);
+    }
+
+    res.status(200).json({
+      message: "Balance fetched successfully",
+      balance: formattedBalance,
+    });
+  } catch (error) {
+    console.error("Balance fetch error:", error);
+    res.status(500).json({ message: "Error fetching balance" });
+  }
+};
+
