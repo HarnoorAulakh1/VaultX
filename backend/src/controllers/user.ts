@@ -5,7 +5,6 @@ import user from "../models/user.js";
 import { createToken } from "../utils/jwt.js";
 import { userInterface } from "../types/user";
 import { ethers } from "ethers";
-import { provider, provider_bsc } from "../index.js";
 import { encrypt, decrypt, base64ToUint8Array } from "../utils/encryption.js";
 import { getProvider } from "../utils/contractAddresses.js";
 import axios from "axios";

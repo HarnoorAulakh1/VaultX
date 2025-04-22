@@ -61,6 +61,7 @@ export default function SendEth() {
     setLoading1(false);
   }
   useEffect(() => {
+    console.log(token);
     async function handle() {
       setLoading(false);
       const public_id = user.public_id;
@@ -124,7 +125,7 @@ export default function SendEth() {
           placeholder="0"
         />
         <div className="flex items-center mt-2">
-          <img src={user.network?.img} alt="ETH" className="w-10 h-10" />
+          <img src={token.img} alt={token.symbol} className="w-10 h-10" />
           <span className="ml-2 text-gray-400 text-2xl font-semibold">{token.symbol}</span>
         </div>
         <p className="text-gray-500 text-sm mt-1">$0.00</p>

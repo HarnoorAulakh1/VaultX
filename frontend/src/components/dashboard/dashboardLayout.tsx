@@ -18,7 +18,7 @@ export default function DashboardLayout() {
     const url = window.location.href;
     const path = url.split("/").pop();
     if (path != undefined) setState(path);
-  }, []);
+  }, [window.location.href]);
   async function logout(e: React.MouseEvent<HTMLSpanElement>) {
     e.preventDefault();
     const response = await api.get("/user/lock");

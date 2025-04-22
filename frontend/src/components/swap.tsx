@@ -1,9 +1,25 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useEffect } from "react";
+import { useContext } from "react";
+import { userContext } from "../contexts/user";
+import { api } from "../lib/utils";
+import { chainId, tokens } from "../lib/config";
+import { SkeletonTheme } from "react-loading-skeleton";
+import Skeleton from "react-loading-skeleton";
 
 function Swap() {
   const [sendAmount, setSendAmount] = useState("0");
   const [receiveAmount, setReceiveAmount] = useState("0");
+  const { user } = useContext(userContext);
+  const [chainId1, setChainId] = useState<number>(0);
+  useEffect(() => {
+      console.log(user);
+      console.log(user.network.network.toLowerCase());
+      setChainId(
+        chainId[user.network.network.toLowerCase() as keyof typeof chainId]
+      );
+    }, [user]);
 
   return (
     <div className=" text-white  p-4 overflow-scroll">
@@ -78,7 +94,6 @@ function Swap() {
           </div>
         </div>
 
-        {/* Arrow divider */}
         <div className="flex justify-center mt-2 relative z-10">
           <div className="bg-[#1A1A1A] rounded-full p-3">
             <svg
@@ -99,7 +114,6 @@ function Swap() {
           </div>
         </div>
 
-        {/* Receive section */}
         <div className="bg-[#1E1E1E] mt-2 p-4 rounded-xl">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xl font-bold">Receive</span>
@@ -128,7 +142,6 @@ function Swap() {
           <div className="text-gray-400 text-xl">$0.00</div>
         </div>
 
-        {/* Trending tokens */}
         <div className="w-full mt-[5rem] overflow-scroll">
           <div className="flex items-center">
             <h2 className="text-xl font-bold">Trending Tokens</h2>
@@ -150,122 +163,79 @@ function Swap() {
             </svg>
           </div>
 
-          {/* Token list */}
           <div className="space-y-2 mt-2 h-full">
-            {/* Ondo Finance */}
-            <div className="bg-[#1E1E1E] hover:cursor-pointer rounded-xl p-3 flex justify-between items-center">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mr-3">
-                  <div className="w-6 h-6 border-4 border-black rounded-full"></div>
-                </div>
-                <div>
-                  <div className="font-bold">Ondo Finance</div>
-                  <div className="text-gray-500 text-sm">ONDO</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="font-bold">$0.7921</div>
-                <div className="text-red-500 text-sm">-0.08%</div>
-              </div>
-            </div>
-
-            {/* Wrapped eETH */}
-            <div className="bg-[#1E1E1E]  hover:cursor-pointer rounded-xl p-3 flex justify-between items-center">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-[#627BF7] rounded-full flex items-center justify-center mr-3">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 256 417"
-                    xmlns="http://www.w3.org/2000/svg"
-                    preserveAspectRatio="xMidYMid"
-                  >
-                    <path
-                      fill="#fff"
-                      d="M127.9611 0l-2.795 9.5v275.668l2.795 2.79 127.962-75.638z"
-                    />
-                    <path
-                      fill="#fff"
-                      d="M127.962 0L0 212.32l127.962 75.639V154.158z"
-                    />
-                    <path
-                      fill="#fff"
-                      d="M127.9611 312.1866l-1.575 1.92v98.199l1.575 4.6z"
-                    />
-                    <path
-                      fill="#fff"
-                      d="M127.962 416.9052v-104.72L0 236.587z"
-                    />
-                    <path
-                      fill="#fff"
-                      d="M127.9611 287.9577l127.96-75.637-127.96-58.162z"
-                    />
-                    <path fill="#fff" d="M0 212.3208l127.96 75.637V154.1587z" />
-                  </svg>
-                </div>
-                <div>
-                  <div className="font-bold">Wrapped eETH</div>
-                  <div className="text-gray-500 text-sm">WEETH</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="font-bold">$1,914.5252</div>
-                <div className="text-red-500 text-sm">-2.04%</div>
-              </div>
-            </div>
-
-            {/* MUPPETS */}
-            <div className="bg-[#1E1E1E]  hover:cursor-pointer rounded-xl p-3 flex justify-between items-center">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center mr-3 overflow-hidden">
-                  <div className="w-7 h-7 bg-green-600 rounded-full mt-1"></div>
-                </div>
-                <div>
-                  <div className="font-bold">MUPPETS</div>
-                  <div className="text-gray-500 text-sm">MUPPETS</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="font-bold">$0.0002</div>
-                <div className="text-green-500 text-sm">+488.12%</div>
-              </div>
-            </div>
-
-            {/* CryptoCAT */}
-            <div className="bg-[#1E1E1E]  hover:cursor-pointer rounded-xl p-3 flex justify-between items-center">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-blue-900 rounded-full flex items-center justify-center mr-3">
-                  <div className="w-6 h-6 bg-blue-800 rounded-full"></div>
-                </div>
-                <div>
-                  <div className="font-bold">CryptoCAT</div>
-                  <div className="text-gray-500 text-sm">CRYPTOCAT</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="font-bold">$0.0019</div>
-                <div className="text-green-500 text-sm">+969.25%</div>
-              </div>
-            </div>
-
-            {/* WhiteRock */}
-            <div className="bg-[#1E1E1E] hover:cursor-pointer rounded-xl p-3 flex justify-between items-center">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mr-3">
-                  <div className="w-6 h-6 bg-gray-200 rounded-full"></div>
-                </div>
-                <div>
-                  <div className="font-bold">WhiteRock</div>
-                  <div className="text-gray-500 text-sm">WHITE</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="font-bold">$0.0007</div>
-                <div className="text-green-500 text-sm">+12.34%</div>
-              </div>
-            </div>
+            {chainId1 != 0 &&
+                      chainId1 != undefined &&
+                      tokens[chainId1 as keyof typeof tokens].map((token) => (
+                        <Tab
+                          key={token.name}
+                          img={token.img}
+                          coingeckoId={token.coingeckoId}
+                          symbol={token.symbol}
+                          name={token.name}
+                        />
+                      ))}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function Tab({
+  name,
+  symbol,
+  img,
+  coingeckoId,
+}: {
+  name: string;
+  symbol: string;
+  img: string;
+  coingeckoId: string;
+}) {
+  const [price, setprice] = useState<number>(-1);
+  useEffect(() => {
+    try {
+      async function handle() {
+        const response1 = await api.get(`/user/getPrice/${coingeckoId}`);
+        if (response1.status == 200) {
+          setprice(response1.data.price);
+        }
+      }
+      handle();
+    } catch (e) {
+      console.log(e);
+      setprice(0);
+    }
+  }, [coingeckoId]);
+  return (
+    <div className="bg-[#1E1E1E] hover:cursor-pointer rounded-xl p-3 flex justify-between items-center">
+      <div className="flex items-center">
+        <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mr-3">
+          <img
+            src={img}
+            alt="Ethereum"
+            width={40}
+            height={40}
+            className="rounded-full bg-[#627eea]"
+          />
+        </div>
+        <div>
+          <div className="font-bold">{name}</div>
+          <div className="text-gray-500 text-sm">{symbol}</div>
+        </div>
+      </div>
+      <div className="text-right">
+        <div className="font-bold">${price != -1 ? (
+                      `${price}`
+                    ) : (
+                      <SkeletonTheme baseColor="#202020" highlightColor="#444">
+                        <p className="w-[5rem]">
+                          <Skeleton />
+                        </p>
+                      </SkeletonTheme>
+                    )}</div>
+        <div className="text-green-500 text-sm">+12.34%</div>
       </div>
     </div>
   );

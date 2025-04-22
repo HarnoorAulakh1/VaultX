@@ -134,7 +134,7 @@ export default function Token() {
   );
 }
 
-function Tab({
+export function Tab({
   chainId1,
   name,
   symbol,

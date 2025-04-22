@@ -1,13 +1,20 @@
-import { provider, provider_bsc ,provider_eth,provider_bsc1} from "../index.js";
+import { JsonRpcProvider } from "ethers";
 
-
-
-  export function getProvider(network:string){
-    if (network === "Ethereum") {
-      return provider_eth;
-    } else if (network === "BSC") {
-      return provider_bsc1;
-    } else {
-      return null;
+export const getProvider = (network1: string) => {
+  const network = network1.toLowerCase();
+  try {
+    switch (network) {
+      case "ethereum":
+        return new JsonRpcProvider(process.env.ETHEREUM_MAIN);
+      case "bsc":
+        return new JsonRpcProvider(process.env.BSC_MAIN);
+      case "bsc_test":
+        return new JsonRpcProvider(process.env.BSC_TEST);
+      default:
+        return new JsonRpcProvider(process.env.INFURA_URL); // fallback or polygon
     }
+  } catch (err) {
+    console.error(`Error creating provider for ${network}:`, err);
+    return null;
   }
+};

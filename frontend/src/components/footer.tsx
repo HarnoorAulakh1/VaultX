@@ -9,7 +9,7 @@ export default function Footer() {
     const url = window.location.href;
     const path = url.split("/").pop();
     if (path != undefined) setState(path);
-  }, []);
+  }, [window.location.href]);
   return (
     <div className="flex justify-around border-t text-gray-400 border-[#2a2a2a] bg-[#14151c] py-2 ">
       <button

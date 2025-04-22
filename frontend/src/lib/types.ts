@@ -14,7 +14,7 @@ export interface walletInterface {
 
 export interface tokenInterface {
   chainId: string;
-  contractAddress: string;
+  contractAddress?: string;
   name: string;
   symbol: string;
   decimals: number;

@@ -14,7 +14,7 @@ export default function Coin() {
   useEffect(() => {
     async function handle() {
       const response = await axios.get(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${token.coingecko}&vs_currencies=usd`
+        `https://api.coingecko.com/api/v3/simple/price?ids=${token.coingeckoId}&vs_currencies=usd`
       );
       console.log(response.data);
       setPrice(response.data[token.coingeckoId].usd);
