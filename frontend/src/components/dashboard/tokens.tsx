@@ -122,7 +122,7 @@ export default function Token() {
               key={token.name}
               chainId1={chainId1}
               img={token.img}
-              address={token.address || ""}
+              contractAddress={token.contractAddress || ""}
               coingeckoId={token.coingeckoId}
               decimals={token.decimals}
               symbol={token.symbol}
@@ -139,7 +139,7 @@ export function Tab({
   name,
   symbol,
   img,
-  address,
+  contractAddress,
   coingeckoId,
   decimals,
 }: {
@@ -147,7 +147,7 @@ export function Tab({
   name: string;
   symbol: string;
   img: string;
-  address: string;
+  contractAddress: string;
   coingeckoId: string;
   decimals: number;
 }) {
@@ -160,10 +160,10 @@ export function Tab({
         const response = await api.post("/user/balance", {
           public_id: user.public_id,
           network: user.network.network,
-          contractAddress: address,
+          contractAddress: contractAddress,
         });
         if (response.status == 200) {
-          setBalance(response.data.balance);
+          setBalance(Number(parseFloat(response.data.balance).toFixed(5)));
         }
         const response1 = await api.get(`/user/getPrice/${coingeckoId}`);
         if (response1.status == 200) {
@@ -184,7 +184,7 @@ export function Tab({
       onClick={() => {
         setToken({
           chainId: chainId1.toString(),
-          contractAddress: address,
+          contractAddress: contractAddress,
           name: name,
           symbol: symbol,
           img: img,

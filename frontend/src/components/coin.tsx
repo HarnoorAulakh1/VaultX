@@ -6,13 +6,25 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { tokenContext } from "../contexts/tokenContext";
+import { userContext } from "../contexts/user";
+import { api } from "../lib/utils";
 
 export default function Coin() {
   const navigate = useNavigate();
   const [price, setPrice] = useState(-1);
   const { token } = useContext(tokenContext);
+  const { user } = useContext(userContext);
+  const [balance, setBalance] = useState(-1);
   useEffect(() => {
     async function handle() {
+      const response1 = await api.post("/user/balance", {
+        public_id: user.public_id,
+        network: user.network.network,
+        contractAddress: token.contractAddress,
+      });
+      if (response1.status == 200) {
+        setBalance(Number(parseFloat(response1.data.balance).toFixed(5)));
+      }
       const response = await axios.get(
         `https://api.coingecko.com/api/v3/simple/price?ids=${token.coingeckoId}&vs_currencies=usd`
       );
@@ -24,6 +36,7 @@ export default function Coin() {
       clearInterval(interval);
     };
   }, []);
+  
 
   return (
     <div className="h-full">
@@ -43,9 +56,25 @@ export default function Coin() {
           height={100}
           className="rounded-full bg-[#627eea] "
         />
-        <h1 className="text-4xl font-bold text-white">0.00</h1>
+        <h1 className="text-4xl font-bold text-white">{balance != -1 ? (
+                  `${balance}`
+                ) : (
+                  <SkeletonTheme baseColor="#202020" highlightColor="#444">
+                    <p className="w-[5rem]">
+                      <Skeleton />
+                    </p>
+                  </SkeletonTheme>
+                )}</h1>
         <div className="flex items-center gap-2">
-          <div className="text-xl text-gray-400">$0.00</div>
+          <div className="text-xl text-gray-400">{price != -1 ? (
+                  `$${(price*balance).toFixed(2)}`
+                ) : (
+                  <SkeletonTheme baseColor="#202020" highlightColor="#444">
+                    <p className="w-[5rem]">
+                      <Skeleton />
+                    </p>
+                  </SkeletonTheme>
+                )}</div>
           <div className="text-[#00c278] text-xl">0%</div>
         </div>
 

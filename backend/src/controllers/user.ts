@@ -15,7 +15,6 @@ const abi = [
   "function decimals() view returns (uint8)",
 ];
 
-
 export const map = new Map();
 const pmap = new Map();
 
@@ -169,16 +168,26 @@ export const checkAddress = async (req: Request, res: Response) => {
     res.status(400).json({ message: "Invalid address" });
     return;
   }
-  const provider1 = getProvider(network);
-  if (!provider1) {
-    res.status(400).json({ message: "Invalid network" });
-    return;
+  try {
+    await delay(5000);
+    const provider1 = getProvider(network);
+    if (!provider1) {
+      res.status(400).json({ message: "Invalid network" });
+      return;
+    }
+    const balance = await provider1.getBalance(public_id);
+      if (balance == null) {
+        res.status(400).json({ message: "Invalid address" });
+        return;
+      }
+      res.status(200).json({
+        message: "account is valid",
+        balance: ethers.formatEther(balance),
+      });
+  } catch (error) {
+    console.error("Error in checkAddress:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-  const balance = await provider1.getBalance(public_id);
-  res.status(200).json({
-    message: "account is valid",
-    balance: ethers.formatEther(balance),
-  });
 };
 
 export const setupExistingWallet = async (req: Request, res: Response) => {
@@ -282,18 +291,17 @@ export const setupExistingWallet = async (req: Request, res: Response) => {
 export const getPrice = async (req: Request, res: Response) => {
   const { id } = req.params;
   console.log(id);
-  if(!id) {
+  if (!id) {
     res.status(400).json({ message: "Field is missing" });
     return;
   }
   try {
+    await delay(5000);
     const response = await axios.get(
       `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd`
     );
-    if (response.status == 200) {
-      const price = response.data[id].usd;
-      res.status(200).json({ price: price });
-    }
+    const price = response.data[id].usd;
+    res.status(200).json({ price: price });
   } catch (error) {
     //console.log(error);
     res.status(500).json({ message: "Error fetching price" });
@@ -302,24 +310,18 @@ export const getPrice = async (req: Request, res: Response) => {
 };
 
 export const transaction = async (req: Request, res: Response) => {
-  const {
-    public_id,
-    public_id1,
-    to,
-    amount,
-    network,
-    contractAddress,
-  } = req.body;
-  if (!public_id || !to || !amount || !public_id1  || !network) {
+  const { public_id, public_id1, to, amount, network, contractAddress } =
+    req.body;
+  if (!public_id || !to || !amount || !public_id1 || !network) {
     res.status(400).json({ message: "Field is missing" });
     return;
   }
-  console.log("hello1",map)
+  console.log("hello1", map);
   if (!map.has(public_id1)) {
     res.status(400).json({ message: "login again" });
     return;
   }
-  console.log("hello2")
+  console.log("hello2");
   const credentials = await user.findOne({ public_id: public_id });
   if (!credentials) {
     res.status(400).json({ message: "Private Key not available" });
@@ -329,7 +331,7 @@ export const transaction = async (req: Request, res: Response) => {
   try {
     const provider = getProvider(network);
 
-    const isNative = !contractAddress || contractAddress == '' ? true : false;
+    const isNative = !contractAddress || contractAddress == "" ? true : false;
 
     if (isNative) {
       if (
@@ -405,7 +407,7 @@ export const transaction = async (req: Request, res: Response) => {
 
 export const balance = async (req: Request, res: Response) => {
   const { public_id, network, contractAddress } = req.body;
- // console.log("Balance request:", req.body);
+  // console.log("Balance request:", req.body);
   if (!public_id || !network) {
     res.status(400).json({ message: "Field is missing" });
     return;
@@ -414,28 +416,34 @@ export const balance = async (req: Request, res: Response) => {
   try {
     const provider = getProvider(network);
 
-    const isNative = (!contractAddress || contractAddress.length==0) ? true : false
-    console.log("isNative", isNative, contractAddress);
+    const isNative =
+      !contractAddress || contractAddress.length == 0 ? true : false;
+    //console.log("isNative", isNative, contractAddress);
 
     let formattedBalance: string;
 
     if (isNative) {
-      const rawBalance = await provider?.getBalance(public_id);
-      formattedBalance = ethers.formatEther(rawBalance || "0");
+      const balance = await provider?.getBalance(public_id);
+      formattedBalance = ethers.formatEther(balance || "0");
+      res.status(200).json({
+        message: "Balance fetched successfully",
+        balance: formattedBalance,
+      });
     } else {
+      await delay(5000);
       const tokenContract = new ethers.Contract(contractAddress, abi, provider);
       const rawBalance = await tokenContract.balanceOf(public_id);
       const decimals = await tokenContract.decimals();
-      formattedBalance = ethers.formatUnits(rawBalance, decimals);
+      const balance = ethers.formatUnits(rawBalance, decimals);
+      res.status(200).json({
+        message: "Balance fetched successfully",
+        balance: balance,
+      });
     }
-
-    res.status(200).json({
-      message: "Balance fetched successfully",
-      balance: formattedBalance,
-    });
   } catch (error) {
-    console.error("Balance fetch error:", error);
+    //console.error("Balance fetch error:", error);
     res.status(500).json({ message: "Error fetching balance" });
   }
 };
 
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));

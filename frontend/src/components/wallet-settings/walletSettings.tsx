@@ -30,7 +30,7 @@ export default function WalletSettings() {
   function copy() {
     //console.log("copied");
     setter(true);
-    navigator.clipboard.writeText(user.public_id || "");
+    navigator.clipboard.writeText(id || "");
     setTimeout(() => {
       setter(false);
     }, 2000);

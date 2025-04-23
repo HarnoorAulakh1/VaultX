@@ -13,8 +13,8 @@ export interface walletInterface {
 }
 
 export interface tokenInterface {
-  chainId: string;
-  contractAddress?: string;
+  chainId?: string;
+  contractAddress?: string | null;
   name: string;
   symbol: string;
   decimals: number;

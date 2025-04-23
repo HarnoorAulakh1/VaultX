@@ -40,6 +40,7 @@ export default function SendEth() {
         public_id: user.public_id,
         public_id1: window.localStorage.getItem("public_id1"),
         network: user.network.network,
+        contractAddress: token.contractAddress,
       });
       console.log(response.data.message);
       if (response.status === 200) {

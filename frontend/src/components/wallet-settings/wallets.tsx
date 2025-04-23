@@ -133,7 +133,7 @@ export default function Wallets() {
   );
 }
 
-function Tab({
+export function Tab({
   img,
   name,
   address,

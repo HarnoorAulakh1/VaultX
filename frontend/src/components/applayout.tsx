@@ -37,6 +37,7 @@ export default function AppLayout() {
           symbol: token.symbol,
           img: token.img,
           coingeckoId: token.coingeckoId,
+          
           decimals: token.decimals,
         });
     } catch (error) {

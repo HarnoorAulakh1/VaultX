@@ -25,7 +25,7 @@ router.route("/checkLogin").post(checkLogin as RequestHandler);
 router.route("/checkAddress").post(checkAddress as RequestHandler);
 router.route("/transaction").post(transaction as RequestHandler);
 router.route("/privateKey").post(privateKey as RequestHandler);
-router.route("/getPrice/:id").get(check,getPrice as RequestHandler);
+router.route("/getPrice/:id").get(getPrice as RequestHandler);
 router.route("/balance").post(balance as RequestHandler);
 
 
