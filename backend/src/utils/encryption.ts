@@ -91,7 +91,6 @@ export async function decrypt(
   }
 }
 
-
 export function base64ToUint8Array(base64: string): Uint8Array {
   const binary_string = atob(base64);
   const len = binary_string.length;
@@ -102,7 +101,31 @@ export function base64ToUint8Array(base64: string): Uint8Array {
   return bytes;
 }
 
-
 export function uint8ArrayToBase64(uint8Array: Uint8Array): string {
-  return btoa(Array.from(uint8Array).map(b => String.fromCharCode(b)).join(''));
+  return btoa(
+    Array.from(uint8Array)
+      .map((b) => String.fromCharCode(b))
+      .join("")
+  );
 }
+
+
+
+// to decode input string in transactions
+
+export const decodeInput = (input: string) => {
+  const methodId = input.slice(0, 10);
+
+  const to = "0x" + input.slice(34, 74);
+
+  const value = "0x" + input.slice(74, 138);
+
+  console.log("Method ID:", methodId);
+  console.log("Receiver Address:", to);
+  console.log("Value:", value);
+  return {
+    methodId,
+    to,
+    value,
+  };
+};

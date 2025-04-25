@@ -28,9 +28,14 @@ import TokenProvider from "./contexts/token";
 
 export default function App() {
   return (
-    <HashRouter>
-      <AnimatedRoutes />
-    </HashRouter>
+    <div className="relative w-full h-full rounded-2xl">
+      <img src="./bg2.jpg" alt="" className="fixed w-full h-full" />
+      <div className="w-full h-full flex items-center justify-center z-[999]">
+        <HashRouter>
+          <AnimatedRoutes />
+        </HashRouter>
+      </div>
+    </div>
   );
 }
 
@@ -68,7 +73,7 @@ function AnimatedRoutes() {
                 <Route path="" element={<Token />} />
                 <Route path="swap" element={<Swap />} />
               </Route>
-              <Route path="coin" element={<Coin/>} />
+              <Route path="coin" element={<Coin />} />
             </Route>
           </Routes>
         </AnimatePresence>

@@ -289,7 +289,7 @@ function Tab({
   useEffect(() => {
     try {
       async function handle() {
-        const response1 = await api.get(`/user/getPrice/${coingeckoId}`);
+        const response1 = await api.get(`/user/getPrice/${symbol}`);
         if (response1.status == 200) {
           setprice(response1.data.price);
         }

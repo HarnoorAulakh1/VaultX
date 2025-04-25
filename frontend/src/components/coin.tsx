@@ -3,7 +3,6 @@ import { ArrowDown, ArrowUp } from "lucide-react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import axios from "axios";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { tokenContext } from "../contexts/tokenContext";
 import { userContext } from "../contexts/user";
@@ -17,6 +16,10 @@ export default function Coin() {
   const [balance, setBalance] = useState(-1);
   useEffect(() => {
     async function handle() {
+      const response = await api.get(`/user/getPrice/${token.symbol}`);
+        if (response.status == 200) {
+          setPrice(response.data.price);
+        }
       const response1 = await api.post("/user/balance", {
         public_id: user.public_id,
         network: user.network.network,
@@ -25,16 +28,8 @@ export default function Coin() {
       if (response1.status == 200) {
         setBalance(Number(parseFloat(response1.data.balance).toFixed(5)));
       }
-      const response = await axios.get(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${token.coingeckoId}&vs_currencies=usd`
-      );
-      console.log(response.data);
-      setPrice(response.data[token.coingeckoId].usd);
     }
-    const interval = setInterval(() => handle(), 10000);
-    return () => {
-      clearInterval(interval);
-    };
+    handle();
   }, []);
   
 

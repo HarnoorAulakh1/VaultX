@@ -105,7 +105,7 @@ export default function Lock() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, x: -100 }}
           transition={{ duration: 0.2, type: "tween" }}
-          className="flex flex-col text-xl h-[600px] w-[361px]  text-white overflow-hidden"
+          className="flex flex-col z-[9999] text-xl h-[600px] rounded-2xl w-[361px] bg-[#0e0f14]  text-white overflow-hidden"
         >
           <ToastContainer />
           <div className="flex justify-end p-4">
@@ -177,7 +177,7 @@ export default function Lock() {
           </div>
         </motion.form>
       ) : (
-        <div className="flex justify-center items-center text-white text-3xl h-[600px] w-[360px]">
+        <div className="flex justify-center rounded-2xl bg-[#0e0f14] z-[999] items-center text-white text-3xl h-[600px] w-[360px]">
           <Loader
             type="ping-cube"
             color="#ffffff"

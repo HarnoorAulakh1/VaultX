@@ -5,9 +5,23 @@ import user from "../models/user.js";
 import { createToken } from "../utils/jwt.js";
 import { userInterface } from "../types/user";
 import { ethers } from "ethers";
-import { encrypt, decrypt, base64ToUint8Array } from "../utils/encryption.js";
+import {
+  encrypt,
+  decrypt,
+  base64ToUint8Array,
+  decodeInput,
+} from "../utils/encryption.js";
 import { getProvider } from "../utils/contractAddresses.js";
 import axios from "axios";
+import { Alchemy, Network, AssetTransfersCategory } from "alchemy-sdk";
+
+const config = {
+  apiKey: process.env.ALCHEMY_KEY,
+  network: Network.BNB_MAINNET,
+};
+const alchemy = new Alchemy(config);
+
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 const abi = [
   "function transfer(address to, uint amount) public returns (bool)",
@@ -169,21 +183,20 @@ export const checkAddress = async (req: Request, res: Response) => {
     return;
   }
   try {
-    await delay(5000);
     const provider1 = getProvider(network);
     if (!provider1) {
       res.status(400).json({ message: "Invalid network" });
       return;
     }
     const balance = await provider1.getBalance(public_id);
-      if (balance == null) {
-        res.status(400).json({ message: "Invalid address" });
-        return;
-      }
-      res.status(200).json({
-        message: "account is valid",
-        balance: ethers.formatEther(balance),
-      });
+    if (balance == null) {
+      res.status(400).json({ message: "Invalid address" });
+      return;
+    }
+    res.status(200).json({
+      message: "account is valid",
+      balance: ethers.formatEther(balance),
+    });
   } catch (error) {
     console.error("Error in checkAddress:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -290,20 +303,37 @@ export const setupExistingWallet = async (req: Request, res: Response) => {
 
 export const getPrice = async (req: Request, res: Response) => {
   const { id } = req.params;
-  console.log(id);
+  //console.log(id);
   if (!id) {
     res.status(400).json({ message: "Field is missing" });
     return;
   }
   try {
-    await delay(5000);
-    const response = await axios.get(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd`
-    );
-    const price = response.data[id].usd;
-    res.status(200).json({ price: price });
+    // const response = await axios.get(
+    //   `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd`
+    // );
+    // const price = response.data[id].usd;
+    // res.status(200).json({ price: price });
+    const options = {
+      method: "GET",
+      headers: { accept: "application/json" },
+    };
+    try {
+      const apiKey=process.env.ALCHEMY_KEY
+      const response = await axios(
+        `https://api.g.alchemy.com/prices/v1/${apiKey}/tokens/by-symbol?symbols=${id}`,
+        options
+      );
+      console.log(response.data.data[0]);
+      const price = response.data.data[0].prices[0].value;
+      res.status(200).json({ price: price });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Error fetching price" });
+      return;
+    }
   } catch (error) {
-    //console.log(error);
+    console.log(error);
     res.status(500).json({ message: "Error fetching price" });
     return;
   }
@@ -446,4 +476,44 @@ export const balance = async (req: Request, res: Response) => {
   }
 };
 
-const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+export const transactions = async (req: Request, res: Response) => {
+  const { public_id, chainId } = req.query;
+  console.log("Transactions request:", req.query);
+  try {
+    const response = await axios.get(
+      `https://api.etherscan.io/v2/api?chainid=${chainId}&module=account&action=txlist&address=${public_id}&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=${process.env.ETHERSCAN_KEY}`
+    );
+    const data = response.data.result;
+    //console.log(data);
+    const transactions = data.map((tx: any) => {
+      if (tx.methodId == "0xa9059cbb") {
+        const data = decodeInput(tx.input);
+        return {
+          hash: tx.hash,
+          from: tx.from,
+          to: data.to,
+          amount: ethers.formatUnits(data.value, 18),
+          date: new Date(tx.timeStamp * 1000).toLocaleString(),
+          status: tx.isError == "0" ? "Success" : "Failed",
+        };
+      }
+      else if(tx.methodId == "0x"){
+      return {
+        hash: tx.hash,
+        from: tx.from,
+        to: tx.to,
+        amount: ethers.formatUnits(tx.value, 18),
+        date: new Date(tx.timeStamp * 1000).toLocaleString(),
+        status: tx.isError == "0" ? "Success" : "Failed",
+      };
+    }
+    });
+    res.status(200).json({
+      message: "Transactions fetched successfully",
+      transactions: transactions,
+    });
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    res.status(500).json({ message: "Error fetching transactions" });
+  }
+};

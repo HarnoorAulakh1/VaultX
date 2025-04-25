@@ -165,7 +165,8 @@ export function Tab({
         if (response.status == 200) {
           setBalance(Number(parseFloat(response.data.balance).toFixed(5)));
         }
-        const response1 = await api.get(`/user/getPrice/${coingeckoId}`);
+        console.log(symbol);
+        const response1 = await api.get(`/user/getPrice/${symbol}`);
         if (response1.status == 200) {
           setprice(response1.data.price);
         }

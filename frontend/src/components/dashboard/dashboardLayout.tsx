@@ -1,4 +1,3 @@
-import { Maximize2 } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { IoCopyOutline } from "react-icons/io5";
 import { useState, useEffect, useContext } from "react";
@@ -36,7 +35,7 @@ export default function DashboardLayout() {
     );
   }
   return (
-    <div className="flex flex-col  h-full text-sm text-white overflow-hidden">
+    <div className="flex flex-col  h-full text-sm text-white overflow-hidden border-1 border-[#202020] rounded-2xl">
       <ToastContainer />
       {/* <div className="p-2 overflow-hidden ">
         <div className="bg-[#3a2e0e] rounded-lg px-4 py-2 flex items-center gap-2">
@@ -47,8 +46,8 @@ export default function DashboardLayout() {
         </div>
       </div> */}
 
-      <div className="p-4 flex items-center justify-between">
-        <div className="flex flex-col items-start gap-2">
+      <div className="p-4 relative justify-center  flex items-center ">
+        <div className="flex flex-col absolute left-5 items-start gap-2">
           <div
             onClick={() => set((x) => !x)}
             className="bg-[#3a3a3a] hover:cursor-pointer rounded-full px-2 py-1 text-[#e27b7b] font-bold"
@@ -110,9 +109,6 @@ export default function DashboardLayout() {
                         )}
         </div>
 
-        <div className="flex gap-2">
-          <Maximize2 size={20} className="text-gray-400" />
-        </div>
       </div>
       <div className="flex  px-4 flex-row justify-center text-gray-400">
         <button

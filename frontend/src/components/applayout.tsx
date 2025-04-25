@@ -37,7 +37,7 @@ export default function AppLayout() {
           symbol: token.symbol,
           img: token.img,
           coingeckoId: token.coingeckoId,
-          
+
           decimals: token.decimals,
         });
     } catch (error) {
@@ -86,7 +86,7 @@ export default function AppLayout() {
 
   return (
     <>
-      <div className="h-[600px] w-[360px] overflow-hidden">
+      <div className="h-[600px] w-[360px] overflow-hidden border-2 border-[#414040] relative bg-[#0e0f14] rounded-2xl">
         {/* {loading && loading != null ? ( */}
         <div className="overflow-hidden h-[91%] relative flex flex-col">
           <Outlet />
