@@ -324,7 +324,7 @@ export const getPrice = async (req: Request, res: Response) => {
         `https://api.g.alchemy.com/prices/v1/${apiKey}/tokens/by-symbol?symbols=${id}`,
         options
       );
-      console.log(response.data.data[0]);
+      //console.log(response.data.data[0]);
       const price = response.data.data[0].prices[0].value;
       res.status(200).json({ price: price });
     } catch (error) {
@@ -478,7 +478,7 @@ export const balance = async (req: Request, res: Response) => {
 
 export const transactions = async (req: Request, res: Response) => {
   const { public_id, chainId } = req.query;
-  console.log("Transactions request:", req.query);
+  //console.log("Transactions request:", req.query);
   try {
     const response = await axios.get(
       `https://api.etherscan.io/v2/api?chainid=${chainId}&module=account&action=txlist&address=${public_id}&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=${process.env.ETHERSCAN_KEY}`
@@ -492,6 +492,10 @@ export const transactions = async (req: Request, res: Response) => {
           hash: tx.hash,
           from: tx.from,
           to: data.to,
+          gasUsed:tx.gasUsed,
+          gasPrice:tx.gasPrice,
+          blockNumbre:tx.blockNumber,
+          contractAddress: tx.to,
           amount: ethers.formatUnits(data.value, 18),
           date: new Date(tx.timeStamp * 1000).toLocaleString(),
           status: tx.isError == "0" ? "Success" : "Failed",
@@ -502,6 +506,7 @@ export const transactions = async (req: Request, res: Response) => {
         hash: tx.hash,
         from: tx.from,
         to: tx.to,
+        contractAddress: null,
         amount: ethers.formatUnits(tx.value, 18),
         date: new Date(tx.timeStamp * 1000).toLocaleString(),
         status: tx.isError == "0" ? "Success" : "Failed",

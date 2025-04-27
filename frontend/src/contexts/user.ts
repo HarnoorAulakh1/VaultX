@@ -13,6 +13,7 @@ export interface userInterface {
   toggleNetwork?:string;
   next?: string;
 }
+
 export const userContext = createContext<{
   user: userInterface;
   dispatch: React.Dispatch<React.SetStateAction<userInterface>>;

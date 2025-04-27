@@ -25,6 +25,7 @@ import AddWallet from "./components/wallet-settings/addWallet";
 import ShowKey from "./components/wallet-settings/showKey";
 import Network from "./components/setup.ts/network";
 import TokenProvider from "./contexts/token";
+import History from "./components/history";
 
 export default function App() {
   return (
@@ -72,6 +73,7 @@ function AnimatedRoutes() {
               <Route path="" element={<Dashboard />}>
                 <Route path="" element={<Token />} />
                 <Route path="swap" element={<Swap />} />
+                <Route path="history" element={<History />} />
               </Route>
               <Route path="coin" element={<Coin />} />
             </Route>

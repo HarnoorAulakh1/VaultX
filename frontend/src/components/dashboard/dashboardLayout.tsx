@@ -140,7 +140,7 @@ export default function DashboardLayout() {
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -100 }}
         transition={{ duration: 0.2, type: "tween" }}
-        className="overflow-hidden relative flex flex-col"
+        className="overflow-hidden relative h-full w-full flex flex-col"
       >
         <Outlet />
       </motion.div>

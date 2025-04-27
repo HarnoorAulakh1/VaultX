@@ -22,3 +22,14 @@ export interface tokenInterface {
   coingeckoId: string;
   isNative?: boolean;
 }
+
+
+export interface transactionInterface {
+  hash: string;
+  from: string;
+  to: string;
+  amount: string;
+  date: string;
+  status: string;
+  contractAddress: string;
+}

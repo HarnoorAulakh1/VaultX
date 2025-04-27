@@ -22,8 +22,9 @@ function Swap() {
   const [show1, setShow1] = useState(false);
   const [show2, setShow2] = useState(false);
   useEffect(() => {
-    console.log(user);
-    console.log(user.network.network.toLowerCase());
+    //console.log(user);
+    //console.log(user.network.network.toLowerCase());
+    if(!user.network.network) return;
     setChainId(chainId[user.network.network.toLowerCase() as keyof typeof chainId])
     const tokens2=tokens[chainId[user.network.network.toLowerCase() as keyof typeof chainId] as keyof typeof tokens]
     if(tokens2 && tokens2.length==0){ return;}

@@ -50,9 +50,9 @@ export default function Footer() {
 
       <button
         className={`${
-          state == "explore" && "text-blue-400"
+          state == "history" && "text-blue-400"
         } flex flex-col items-center hover:cursor-pointer `}
-        onClick={() => navigate("/app/swap")}
+        onClick={() => navigate("/app/history")}
       >
         <div className="">
           <svg
