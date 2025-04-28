@@ -69,8 +69,9 @@ export const lock = async (req: Request, res: Response) => {
   map.delete(req.body.public_id);
   res
     .clearCookie("token", {
-      httpOnly: true,
+      httpOnly: false,
       secure: true,
+      sameSite: "none",
     })
     .send("Logged out");
 };
