@@ -67,7 +67,12 @@ export const login = async (req: Request, res: Response) => {
 
 export const lock = async (req: Request, res: Response) => {
   map.delete(req.body.public_id);
-  res.clearCookie("token").send("Logged out");
+  res
+    .clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+    })
+    .send("Logged out");
 };
 
 export const register = async (req: Request, res: Response) => {
@@ -319,7 +324,7 @@ export const getPrice = async (req: Request, res: Response) => {
       headers: { accept: "application/json" },
     };
     try {
-      const apiKey=process.env.ALCHEMY_KEY
+      const apiKey = process.env.ALCHEMY_KEY;
       const response = await axios(
         `https://api.g.alchemy.com/prices/v1/${apiKey}/tokens/by-symbol?symbols=${id}`,
         options
@@ -492,29 +497,28 @@ export const transactions = async (req: Request, res: Response) => {
           hash: tx.hash,
           from: tx.from,
           to: data.to,
-          gasUsed:tx.gasUsed,
-          gasPrice:tx.gasPrice,
-          blockNumber:tx.blockNumber,
+          gasUsed: tx.gasUsed,
+          gasPrice: tx.gasPrice,
+          blockNumber: tx.blockNumber,
           contractAddress: tx.to,
           amount: ethers.formatUnits(data.value, 18),
           date: new Date(tx.timeStamp * 1000).toLocaleString(),
           status: tx.isError == "0" ? "Success" : "Failed",
         };
+      } else if (tx.methodId == "0x") {
+        return {
+          hash: tx.hash,
+          from: tx.from,
+          to: tx.to,
+          gasUsed: tx.gasUsed,
+          gasPrice: tx.gasPrice,
+          blockNumbre: tx.blockNumber,
+          contractAddress: null,
+          amount: ethers.formatUnits(tx.value, 18),
+          date: new Date(tx.timeStamp * 1000).toLocaleString(),
+          status: tx.isError == "0" ? "Success" : "Failed",
+        };
       }
-      else if(tx.methodId == "0x"){
-      return {
-        hash: tx.hash,
-        from: tx.from,
-        to: tx.to,
-        gasUsed:tx.gasUsed,
-        gasPrice:tx.gasPrice,
-        blockNumbre:tx.blockNumber,
-        contractAddress: null,
-        amount: ethers.formatUnits(tx.value, 18),
-        date: new Date(tx.timeStamp * 1000).toLocaleString(),
-        status: tx.isError == "0" ? "Success" : "Failed",
-      };
-    }
     });
     res.status(200).json({
       message: "Transactions fetched successfully",

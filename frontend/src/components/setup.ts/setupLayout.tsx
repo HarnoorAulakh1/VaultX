@@ -4,7 +4,7 @@ import { api } from "../../lib/utils";
 export default function SetupLayout() {
   useEffect(() => {
     async function logout() {
-      await api.get("/user/lock");
+      await api.post("/user/lock");
     }
     logout();
   }, []);
