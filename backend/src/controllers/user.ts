@@ -164,6 +164,7 @@ export const checkLogin = async (req: Request, res: Response) => {
     req.cookies.token ||
     req.headers["authorization"]?.replace("Bearer ", "");
   const secret: any = process.env.secret;
+  console.log("token", token);
   try {
     if (!token) {
       res.status(401).json({ message: "No token" });
