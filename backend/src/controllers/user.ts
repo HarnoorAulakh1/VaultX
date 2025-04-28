@@ -67,13 +67,13 @@ export const login = async (req: Request, res: Response) => {
 
 export const lock = async (req: Request, res: Response) => {
   map.delete(req.body.public_id);
-  res.clearCookie("token",
-    {
+  res
+    .clearCookie("token", {
       httpOnly: true,
       secure: true,
       sameSite: "none",
-    }
-  ).send("Logged out");
+    })
+    .send("Logged out");
 };
 
 export const register = async (req: Request, res: Response) => {
@@ -160,10 +160,13 @@ export const privateKey = async (req: Request, res: Response) => {
 };
 
 export const checkLogin = async (req: Request, res: Response) => {
-  let token =(req.cookies && req.cookies.token) ||
-  (req.headers["authorization"]
-    ? JSON.parse(req.headers["authorization"])["value"]
-    : null);
+  let token =
+    (req.cookies && req.cookies.token) ||
+    (req.headers["authorization"]
+      ? JSON.parse(req.headers["authorization"])["value"]
+      : null);
+  const secret: any = process.env.secret;
+  console.log("token", token);
   try {
     if (!token) {
       res.status(401).json({ message: "No token" });
