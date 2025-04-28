@@ -9,8 +9,10 @@ export const check = async (
   next: NextFunction
 ) => {
   let token =
-    req.cookies.token ||
-    req.headers["authorization"]?.replace("Bearer ", "");
+    (req.cookies && req.cookies.token) ||
+    (req.headers["authorization"]
+      ? JSON.parse(req.headers["authorization"])["value"]
+      : null);
   const secret: any = process.env.secret;
   //console.log("token",token);
   try {
@@ -20,6 +22,6 @@ export const check = async (
     //console.log("token",data["_doc"]);
     next();
   } catch (err) {
-    res.status(401).json({message:"Invalid token"});
+    res.status(401).json({ message: "Invalid token" });
   }
 };

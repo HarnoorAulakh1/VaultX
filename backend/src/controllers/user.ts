@@ -160,11 +160,10 @@ export const privateKey = async (req: Request, res: Response) => {
 };
 
 export const checkLogin = async (req: Request, res: Response) => {
-  let token =
-    req.cookies.token ||
-    req.headers["authorization"]?.replace("Bearer ", "");
-  const secret: any = process.env.secret;
-  console.log("token", token);
+  let token =(req.cookies && req.cookies.token) ||
+  (req.headers["authorization"]
+    ? JSON.parse(req.headers["authorization"])["value"]
+    : null);
   try {
     if (!token) {
       res.status(401).json({ message: "No token" });
