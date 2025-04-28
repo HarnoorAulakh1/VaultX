@@ -6,6 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { userContext } from "../../contexts/user";
 import { useContext } from "react";
 import { networkInterface } from "../../lib/types";
+import {data as data1 } from "../../lib/utils";
 
 export default function PasswordSet() {
   const [password, setPassword] = useState("");
@@ -66,9 +67,9 @@ export default function PasswordSet() {
                     name: `Wallet${find.wallets.length + 1}`,
                     img:
                       user.network?.img ||
-                      data.find(
-                        (x1: { name: string; img: string }) =>
-                          x1.name === data.network
+                      data1.find(
+                        (x1: { network: string; img: string }) =>
+                          x1.network === data.network
                       )?.img ||
                       "",
                   },
@@ -95,9 +96,9 @@ export default function PasswordSet() {
                     name: `Wallet1`,
                     img:
                       user.network?.img ||
-                      data.find(
-                        (x1: { name: string; img: string }) =>
-                          x1.name === data.network
+                      data1.find(
+                        (x1: { network: string; img: string }) =>
+                          x1.network === data.network
                       )?.img ||
                       "",
                   },
@@ -142,9 +143,9 @@ export default function PasswordSet() {
                 network: data.network,
                 img:
                   user.network?.img ||
-                  data.find(
-                    (x1: { name: string; img: string }) =>
-                      x1.name === data.network
+                  data1.find(
+                    (x1: { network: string; img: string }) =>
+                      x1.network === data.network
                   )?.img ||
                   "",
               },
@@ -197,9 +198,9 @@ export default function PasswordSet() {
                   name: `Wallet${find.wallets.length + 1}`,
                   img:
                     user.network?.img ||
-                    data.find(
-                      (x1: { name: string; img: string }) =>
-                        x1.name === data.network
+                    data1.find(
+                      (x1: { network: string; img: string }) =>
+                        x1.network === data.network
                     )?.img ||
                     "",
                 },
@@ -228,9 +229,9 @@ export default function PasswordSet() {
                   name: "Wallet1",
                   img:
                     user.network?.img ||
-                    data.find(
-                      (x1: { name: string; img: string }) =>
-                        x1.name === data.network
+                    data1.find(
+                      (x1: { network: string; img: string }) =>
+                        x1.network === data.network
                     )?.img ||
                     "",
                 },
@@ -266,9 +267,9 @@ export default function PasswordSet() {
                 name: "Wallet1",
                 img:
                   user.network?.img ||
-                  data.find(
-                    (x1: { name: string; img: string }) =>
-                      x1.name === data.network
+                  data1.find(
+                    (x1: { network: string; img: string }) =>
+                      x1.network === data.network
                   )?.img ||
                   "",
               },

@@ -18,6 +18,7 @@ export default function AppLayout() {
   const { setToken } = useContext(tokenContext);
   // const [loading, setLoading] = useState(false);
   useEffect(() => {
+    if (!user.network.network) return;
     try {
       const token1 =
         tokens[
