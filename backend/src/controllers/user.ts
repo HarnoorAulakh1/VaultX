@@ -57,9 +57,7 @@ export const login = async (req: Request, res: Response) => {
   res
     .status(200)
     .cookie("token", createToken({ ...user1, private_key: {} }), {
-      httpOnly: false,
-      secure: true,
-      sameSite: "none",
+      httpOnly: true,
       expires: new Date(Date.now() + 1000 * 60 * 60),
     })
     .send({ ...user1, private_key: "" });
@@ -67,13 +65,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const lock = async (req: Request, res: Response) => {
   map.delete(req.body.public_id);
-  res
-    .clearCookie("token", {
-      httpOnly: false,
-      secure: true,
-      sameSite: "none",
-    })
-    .send("Logged out");
+  res.clearCookie("token").send("Logged out");
 };
 
 export const register = async (req: Request, res: Response) => {
