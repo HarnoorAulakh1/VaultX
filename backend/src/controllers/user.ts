@@ -152,11 +152,9 @@ export const privateKey = async (req: Request, res: Response) => {
 };
 
 export const checkLogin = async (req: Request, res: Response) => {
-  const token =
-    (req.cookies && req.cookies.token) ||
-    (req.headers["authorization"]
-      ? JSON.parse(req.headers["authorization"])["value"]
-      : null);
+  let token =
+    req.cookies.token ||
+    req.headers["authorization"]?.replace("Bearer ", "");
   const secret: any = process.env.secret;
   try {
     if (!token) {
