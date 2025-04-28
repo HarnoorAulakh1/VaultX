@@ -26,7 +26,6 @@ export default function AppLayout() {
           ] as keyof typeof tokens
         ];
       const token = token1.find((x) => x.isNative);
-      console.log("token", token);
       if (token)
         setToken({
           chainId:

@@ -20,8 +20,6 @@ export default function Token() {
   const times = useRef(0);
   console.log(chainId1);
   useEffect(() => {
-    console.log(user);
-    console.log(user.network.network.toLowerCase());
     setChainId(
       chainId[user.network.network.toLowerCase() as keyof typeof chainId]
     );
@@ -165,7 +163,6 @@ export function Tab({
         if (response.status == 200) {
           setBalance(Number(parseFloat(response.data.balance).toFixed(5)));
         }
-        console.log(symbol);
         const response1 = await api.get(`/user/getPrice/${symbol}`);
         if (response1.status == 200) {
           setprice(response1.data.price);

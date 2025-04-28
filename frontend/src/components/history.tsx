@@ -1,47 +1,23 @@
 import { useContext, useEffect, useState } from "react";
-import { api } from "../lib/utils";
 import { userContext } from "../contexts/user";
 import { chainId } from "../lib/config";
 import { tokens } from "../lib/config";
-import { transactionInterface } from "../lib/types";
+import { transactionContext } from "../contexts/transactionContext";
 import Loader from "react-js-loader";
+import { useNavigate } from "react-router-dom";
 
 export default function History() {
-  const [transactions, setTransactions] = useState<transactionInterface[]>([]);
   const [loading, setLoading] = useState(false);
-  const { user } = useContext(userContext);
+  const { transactions } = useContext(transactionContext);
   useEffect(() => {
-    async function handle() {
-      setLoading(false);
-      if (!user.public_id || !user.network.network) return;
-      try {
-        const response = await api.get(
-          `user/transaction?chainId=${
-            chainId[user.network.network.toLowerCase() as keyof typeof chainId]
-          }&public_id=${user.public_id}`
-        );
-       // console.log(response.data.transactions);
-        if (response.status === 200) {
-          const sorted = response.data.transactions
-            .filter((x: transactionInterface) => x != null)
-            .sort(
-              (a: transactionInterface, b: transactionInterface) =>
-                new Date(b.date).getTime() - new Date(a.date).getTime()
-            );
-          setTransactions(
-            sorted.filter((x: transactionInterface) => x != null)
-          );
-        }
-      } catch (e) {
-        console.log(e);
-      }
-      setLoading(true);
-    }
-    handle();
-  }, [user.public_id, user.network.network]);
+    setLoading(false);
+    if (transactions == null || transactions == undefined) return;
+    if(transactions.length != 0 || transactions!=null)
+    setLoading(true);
+  }, [transactions]);
   return (
     <div className=" text-white flex flex-col gap-2 w-full h-full  p-4 overflow-scroll">
-      {loading ? (
+      {(loading && transactions!=null) ? (
         transactions.length != 0 &&
         transactions.map((transaction, index) => (
           <Tab
@@ -50,8 +26,6 @@ export default function History() {
             from={transaction.from}
             to={transaction.to}
             amount={transaction.amount}
-            date={transaction.date}
-            status={transaction.status}
             contractAddress={transaction.contractAddress}
           />
         ))
@@ -74,21 +48,14 @@ function Tab({
   from,
   to,
   amount,
-  date,
-  status,
   contractAddress,
 }: {
   hash: string;
   from: string;
   to: string;
   amount: string;
-  date: string;
-  status: string;
   contractAddress: string;
 }) {
-  console.log(date);
-  console.log(hash);
-  console.log(status);
   const [token, setToken] = useState({
     name: "",
     symbol: "",
@@ -96,16 +63,13 @@ function Tab({
     address: "",
   });
   const { user } = useContext(userContext);
+  const navigate = useNavigate();
   useEffect(() => {
     const find = tokens[
       chainId[
         user.network.network.toLowerCase() as keyof typeof chainId
       ] as keyof typeof tokens
     ].find((x) => x.contractAddress == contractAddress);
-
-    // console.log(contractAddress, find);
-
-    console.log("");
     if (find) {
       setToken({
         name: find.name,
@@ -117,10 +81,12 @@ function Tab({
   }, [to, from, user.network.network, user.public_id, contractAddress]);
   function selectTransaction(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
+    navigate('/app/details/' + hash);
     console.log("transaction");
   }
   return (
     <div
+    onClick={(e) => selectTransaction(e)}
       className={`bg-[#202126] z-0 relative hover:bg-[#141418] flex flex-row items-center gap-[1rem] px-2 py-1 w-full rounded-lg`}
     >
       <div

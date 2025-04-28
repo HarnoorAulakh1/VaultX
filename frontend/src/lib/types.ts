@@ -28,6 +28,9 @@ export interface transactionInterface {
   hash: string;
   from: string;
   to: string;
+  gasUsed: string;
+  gasPrice: string;
+  blockNumber:string,
   amount: string;
   date: string;
   status: string;

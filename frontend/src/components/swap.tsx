@@ -66,7 +66,7 @@ function Swap() {
           <div className="flex justify-between items-center mb-2">
             <span className="text-xl font-bold">Send</span>
             <span className="text-gray-400">
-              Balance: <span className="text-blue-400">0.0 ETH</span>
+              Balance: <span className="text-blue-400">0.0 {from?.symbol}</span>
             </span>
           </div>
 
@@ -168,7 +168,7 @@ function Swap() {
         <div className="bg-[#1E1E1E] mt-2 p-4 rounded-xl">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xl font-bold">Receive</span>
-            <span className="text-gray-400">Balance: 0</span>
+            <span className="text-gray-400">Balance: 0 {" "+to?.symbol}</span>
           </div>
 
           <div className="flex justify-between items-center">
