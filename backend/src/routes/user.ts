@@ -21,7 +21,7 @@ router.route("/setup").post(register as RequestHandler);
 router
   .route("/setupExistingWallet")
   .post(setupExistingWallet as RequestHandler);
-router.route("/lock").get(lock as RequestHandler);
+router.route("/lock").post(lock as RequestHandler);
 router.route("/checkLogin").post(checkLogin as RequestHandler);
 router.route("/checkAddress").post(checkAddress as RequestHandler);
 router.route("/transaction").post(transaction as RequestHandler);

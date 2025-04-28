@@ -20,7 +20,9 @@ export default function DashboardLayout() {
   }, [window.location.href]);
   async function logout(e: React.MouseEvent<HTMLSpanElement>) {
     e.preventDefault();
-    const response = await api.get("/user/lock");
+    const response = await api.post("/user/lock",{
+      public_id: user.public_id,
+    });
     if (response.status === 200) {
       navigate("/");
     }
