@@ -167,6 +167,8 @@ export const checkLogin = async (req: Request, res: Response) => {
       : null);
   const secret: any = process.env.secret;
   console.log("token", token);
+  console.log("req.cookies", req.cookies);
+  console.log("req.headers", req.headers);
   try {
     if (!token) {
       res.status(401).json({ message: "No token" });
