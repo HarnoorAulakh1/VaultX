@@ -54,6 +54,10 @@ export const login = async (req: Request, res: Response) => {
   setTimeout(() => {
     map.delete(public_id);
   }, 60 * 61 * 1000);
+  res.cookie("test", "hello", {
+    sameSite: "none",
+    secure: true,
+  });
   res
     .status(200)
     .cookie("token", createToken({ ...user1, private_key: {} }), {
