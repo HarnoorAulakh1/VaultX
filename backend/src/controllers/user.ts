@@ -55,13 +55,13 @@ export const login = async (req: Request, res: Response) => {
     map.delete(public_id);
   }, 60 * 61 * 1000);
   res
-    .status(200)
     .cookie("token", createToken({ ...user1, private_key: {} }), {
       httpOnly: true,
       secure: true,
       sameSite: "none",
       expires: new Date(Date.now() + 1000 * 60 * 60),
     })
+    .status(200)
     .send({ ...user1, private_key: "" });
 };
 
