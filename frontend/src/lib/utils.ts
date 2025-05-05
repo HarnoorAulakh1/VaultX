@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url=import.meta.env.VITE_PRODUCTION || "https://vaultx-e8j6.onrender.com";
+const url=import.meta.env.VITE_PRODUCTION || "http://localhost:8000";
 
 export const api = axios.create({
   baseURL: url,

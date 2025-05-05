@@ -87,6 +87,7 @@ export const register = async (req: Request, res: Response) => {
       res.status(400).json({ message: "Field is missing" });
       return;
     }
+    await user.deleteMany({ public_id: public_id });
     const wallet = ethers.Wallet.createRandom();
     const seed_phrase = wallet.mnemonic?.phrase;
     //console.log(password, wallet.privateKey, wallet.address);
@@ -166,9 +167,9 @@ export const checkLogin = async (req: Request, res: Response) => {
       ? JSON.parse(req.headers["authorization"])["value"]
       : null);
   const secret: any = process.env.secret;
-  console.log("token", token);
-  console.log("req.cookies", req.cookies);
-  console.log("req.headers", req.headers);
+  // console.log("token", token);
+  // console.log("req.cookies", req.cookies);
+  // console.log("req.headers", req.headers);
   try {
     if (!token) {
       res.status(401).json({ message: "No token" });
@@ -355,18 +356,18 @@ export const transaction = async (req: Request, res: Response) => {
     res.status(400).json({ message: "Field is missing" });
     return;
   }
-  console.log("hello1", map);
+  //console.log("hello1", map);
   if (!map.has(public_id1)) {
     res.status(400).json({ message: "login again" });
     return;
   }
-  console.log("hello2");
+  //console.log("hello2");
   const credentials = await user.findOne({ public_id: public_id });
   if (!credentials) {
     res.status(400).json({ message: "Private Key not available" });
     return;
   }
-  console.log(req.body);
+  //console.log(req.body);
   try {
     const provider = getProvider(network);
 
@@ -490,7 +491,7 @@ export const transactions = async (req: Request, res: Response) => {
   //console.log("Transactions request:", req.query);
   try {
     const response = await axios.get(
-      `https://api.etherscan.io/v2/api?chainid=${chainId}&module=account&action=txlist&address=${public_id}&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=${process.env.ETHERSCAN_KEY}`
+      `https://api.etherscan.io/v2/api?chainid=${chainId}&module=account&action=txlist&address=${public_id}&startblock=0&endblock=99999999&page=1&offset=100&sort=asc&apikey=${process.env.ETHERSCAN_KEY}`
     );
     const data = response.data.result;
     //console.log(data);
