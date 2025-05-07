@@ -6,14 +6,17 @@ import { ToastContainer, toast } from "react-toastify";
 import { userContext } from "../../contexts/user";
 import { useContext } from "react";
 import { networkInterface } from "../../lib/types";
-import {data as data1 } from "../../lib/utils";
+import { data as data1 } from "../../lib/utils";
+import Loader from "react-js-loader";
 
 export default function PasswordSet() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const { user, dispatch } = useContext(userContext);
   async function handle(e: React.SyntheticEvent) {
+    setLoading(true);
     e.preventDefault();
     if (user.private_key || user.seed_phrase) {
       let response;
@@ -287,6 +290,7 @@ export default function PasswordSet() {
         navigate("/");
       }
     }
+    setLoading(false);
   }
 
   return (
@@ -334,9 +338,17 @@ export default function PasswordSet() {
             ? "bg-gray-300 text-black"
             : "bg-gray-800 text-gray-500"
         }`}
-        disabled={password.length < 8 || password !== confirmPassword}
+        disabled={
+          password.length < 8 || password !== confirmPassword || loading
+        }
       >
-        Next
+        {loading ? (
+          <div className="w-full h-[2rem] flex items-center justify-center overflow-hidden rounded-2xl bg-gray-300 z-[999] ">
+            <Loader type="circle" color="#ffffff" size={20} />
+          </div>
+        ) : (
+          "Next"
+        )}
       </button>
     </form>
   );
