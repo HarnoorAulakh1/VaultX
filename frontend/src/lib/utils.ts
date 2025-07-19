@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url=import.meta.env.VITE_PRODUCTION || "https://50.19.171.226/";
+const url=import.meta.env.VITE_PRODUCTION || "https://api.aulakh.site/";
 
 export const api = axios.create({
   baseURL: url,

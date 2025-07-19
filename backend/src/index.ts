@@ -17,6 +17,7 @@ app.use(
     origin: [
       "http://localhost:8000",
       "https://vaultx-crypro.netlify.app",
+      "https://vaultx.aulakh.site",
       "http://localhost:5174",
       "http://localhost:5173",
       "https://hoppscotch.io",

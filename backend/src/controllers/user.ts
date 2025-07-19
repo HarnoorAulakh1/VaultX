@@ -79,8 +79,8 @@ export const lock = async (req: Request, res: Response) => {
 export const register = async (req: Request, res: Response) => {
   try {
     let { public_id, password, network } = req.body;
-    console.log(public_id, password, network);
-    console.log(map);
+    //console.log(public_id, password, network);
+    //console.log(map);
     if (public_id && map.has(public_id)) {
       password = map.get(public_id);
     } else if (!password) {
@@ -215,8 +215,6 @@ export const checkAddress = async (req: Request, res: Response) => {
 
 export const setupExistingWallet = async (req: Request, res: Response) => {
   const { password, private_key, seed_phrase, network } = req.body;
-  console.log(password.length);
-  console.log(password == "demo7890");
   if (!password || !(private_key || seed_phrase)) {
     res.status(400).json({ message: "Field is missing" });
     return;
@@ -233,8 +231,8 @@ export const setupExistingWallet = async (req: Request, res: Response) => {
   }
 
   try {
-    console.log(seed_phrase);
-    console.log(wallet.address);
+    //console.log(seed_phrase);
+    //console.log(wallet.address);
     const address = wallet.address;
     const encrypted = await encrypt(password, wallet.privateKey);
     const newUser = new user({
