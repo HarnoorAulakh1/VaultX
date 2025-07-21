@@ -7,6 +7,7 @@ import { userContext } from "../../contexts/user";
 import { data } from "../../lib/utils";
 import { IoCopyOutline } from "react-icons/io5";
 import { TiTick } from "react-icons/ti";
+import { tokenContext } from "../../contexts/tokenContext";
 
 export default function Send() {
   const [address, set] = useState("");
@@ -16,6 +17,7 @@ export default function Send() {
   >([]);
   const navigate = useNavigate();
   const { user } = useContext(userContext);
+  const {token}= useContext(tokenContext);
   useEffect(() => {
     const networks = JSON.parse(
       window.localStorage.getItem("networks") || "{}"
@@ -54,7 +56,7 @@ export default function Send() {
           size={24}
           onClick={() => navigate(-1)}
         />
-        <h2 className="text-xl font-semibold text-center w-full">Send Eth</h2>
+        <h2 className="text-xl font-semibold text-center w-full">Send {token.name}</h2>
       </div>
       <input
         type="text"

@@ -181,7 +181,7 @@ export default function SendEth() {
             Confirm
           </button>
           <p className="text-gray-400 text-sm mt-2 text-center">
-            This address can only receive assets on Ethereum.
+            This address can only receive assets on {token.name}.
           </p>
         </div>
       </Popup>
