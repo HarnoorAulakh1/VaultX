@@ -9,7 +9,7 @@ export default function SetupLayout() {
     logout();
   }, []);
   return (
-    <div className="w-[361px] h-[600px] rounded-2xl flex justify-center items-center bg-[#0e0e0f] z-[999]">
+    <div className="w-[361px] h-[600px] rounded-2xl overflow-hidden flex justify-center items-center bg-[#0e0e0f] z-[999]">
       <Outlet />
     </div>
   );

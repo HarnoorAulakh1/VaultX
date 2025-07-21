@@ -171,8 +171,8 @@ export default function Lock() {
                 Unlock
               </button>
             </div>
-            <button type="button" className="text-gray-400 text-sm">
-              Forgot password
+            <button onClick={()=>navigate("/setup")} type="button" className="text-gray-400 text-sm hover:cursor-pointer hover:underline">
+              Forgot password, setup again?
             </button>
           </div>
         </motion.form>
